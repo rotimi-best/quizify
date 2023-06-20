@@ -2,23 +2,47 @@
   import { useCompletion } from 'ai/svelte';
   import { structureOpenAiResponse } from '$lib/utils/structureOpenAiResponse';
   import type { QData } from '$lib/utils/structureOpenAiResponse';
+  import { mockData } from '$lib/utils/mock';
+  import Sidebar from './Sidebar.svelte';
+  import Tabs from './Tabs.svelte';
+  import TabContent from './TabContent.svelte';
 
   let body = {
-    questions: 3,
-    options: 4,
+    questions: 2,
+    options: 3,
   };
   let questionsJson: Array<QData> = [];
   let rawText: Array<string> = [];
-  let cardClass = 'bg-white shadow-xl p-8 text-slate-700 text-sm leading-6';
   let textarea: HTMLElement;
   let rawDiv: HTMLElement;
 
+  let tabs = [
+    {
+      label: 'Text',
+      value: 'text',
+    },
+    {
+      label: 'JSON',
+      value: 'json',
+    },
+    {
+      label: 'Quiz',
+      value: 'quiz',
+    },
+  ];
+  let templates = [
+    { id: 'oop', text: 'About OOP' },
+    { id: 'elonMusk', text: 'Knowledge of Elon Musk' },
+    { id: 'spaceFlight', text: 'About Spaceflight' },
+    { id: 'election', text: 'Nigerian 2023 Election' },
+    { id: 'chatGPT', text: 'ChatGPT - AI chat bot' },
+  ];
+  let templateId = templates[0].id || '';
+
+  let currentTab = tabs[0].value;
+
   const { input, handleSubmit, completion } = useCompletion({
-    initialInput: `Object-Oriented Programming (OOP) is a programming paradigm based on the concept of "objects", which can contain data and code. The data is in the form of fields (often known as attributes or properties), and the code is in the form of procedures (often known as methods).
-
-A common feature of objects is that procedures (or methods) are attached to them and can access and modify the object's data fields. In this brand of OOP, there is usually a special name such as this or self used to refer to the current object. In OOP, computer programs are designed by making them out of objects that interact with one another.[1][2] OOP languages are diverse, but the most popular ones are class-based, meaning that objects are instances of classes, which also determine their types.
-
-Many of the most widely used programming languages (such as C++, Java,[3] Python, etc.) are multi-paradigm and they support object-oriented programming to a greater or lesser degree, typically in combination with imperative, procedural programming.`,
+    initialInput: mockData[templateId],
     api: '/api/completion',
     body,
     onResponse: (res) => {
@@ -29,6 +53,10 @@ Many of the most widely used programming languages (such as C++, Java,[3] Python
   });
 
   const isQuestion = (line: string) => /^\d/.test(line.trim());
+  const onChange =
+    (tab = '') =>
+    () =>
+      (currentTab = tab);
 
   $: {
     const { data, raw } = structureOpenAiResponse({
@@ -40,54 +68,70 @@ Many of the most widely used programming languages (such as C++, Java,[3] Python
     rawText = raw;
     if (textarea) {
       textarea.scrollTop = textarea.scrollHeight;
+    }
+    if (rawDiv) {
       rawDiv.scrollTop = rawDiv.scrollHeight;
     }
   }
 </script>
 
-<main class="h-screen w-screen m-0 relative">
-  <div class="flex h-5/6">
-    <form
-      on:submit={(e) => {
+<main class="w-full mt-10">
+  <div class="w-4/5 m-auto flex justify-center">
+    <Sidebar
+      {templates}
+      bind:templateId
+      handleTemplateChange={() => {
+        $input = mockData[templateId];
+      }}
+      handleSubmit={(e) => {
         questionsJson = [];
         setTimeout(() => {
           handleSubmit(e);
         }, 500);
       }}
-      class="w-3/12 {cardClass}"
-    >
-      <textarea
-        bind:value={$input}
-        placeholder="Text to generate quiz from..."
-        class="w-full h-5/6 border-2 border-gray-300 p-5"
-      />
-      <button
-        class="bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-full font-semibold text-white"
-        type="submit">Generate Questions</button
-      >
-    </form>
-
-    <div class="w-3/12 {cardClass}" bind:this={rawDiv}>
-      <h2>Raw</h2>
-      {#each rawText as text}
-        {#if isQuestion(text)}
-          <p class="mt-4">{text}</p>
-        {:else}
-          <p class="ml-3 mb-2">{text}</p>
-        {/if}
-      {:else}
-        <p>{$completion}</p>
-      {/each}
-    </div>
-    <div class="w-3/12 {cardClass}">
-      <h2>JSON</h2>
-      <textarea
-        bind:this={textarea}
-        class="bg-white w-full h-full p-5"
-        disabled
-      >
-        {JSON.stringify(questionsJson, null, 2)}
-      </textarea>
+      bind:questions={body.questions}
+      bind:options={body.options}
+      bind:text={$input}
+    />
+    <div class="w-3/5 ml-5">
+      <Tabs {currentTab} {tabs} {onChange}>
+        <TabContent value={tabs[0].value} index={currentTab}>
+          <div
+            bind:this={rawDiv}
+            class="container w-full rounded-lg bg-white p-5 shadow-lg"
+          >
+            {#each rawText as text}
+              {#if isQuestion(text)}
+                <p class="mt-4">{text}</p>
+              {:else}
+                <p class="ml-3 mb-2">{text}</p>
+              {/if}
+            {:else}
+              <p>{$completion}</p>
+            {/each}
+          </div>
+        </TabContent>
+        <TabContent value={tabs[1].value} index={currentTab}>
+          <textarea
+            bind:this={textarea}
+            class="container bg-white w-full h-full p-5"
+            disabled
+          >
+            {JSON.stringify(questionsJson, null, 2)}
+          </textarea>
+        </TabContent>
+        <TabContent value={tabs[2].value} index={currentTab}>
+          <!-- Rendered uestions here -->
+        </TabContent>
+      </Tabs>
     </div>
   </div>
 </main>
+
+<style>
+  .container {
+    max-height: 700px;
+    height: 700px;
+    overflow: scroll;
+  }
+</style>
