@@ -18,7 +18,7 @@
         class="relative text-center border-r-1 border-t-0 border-b-0 border-l-0 rounded-none mr-3 {currentTab ===
         tab.value
           ? 'text-black font-bold'
-          : 'text-gray'} focus:outline-none w-14 text-left p-3"
+          : 'text-gray'} focus:outline-none w-16 text-left p-3"
         on:click={onChange(tab.value)}
       >
         {tab.label}

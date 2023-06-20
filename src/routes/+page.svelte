@@ -1,4 +1,6 @@
 <script lang="ts">
+  import CodeMirror from 'svelte-codemirror-editor';
+  import { javascript } from '@codemirror/lang-javascript';
   import { useCompletion } from 'ai/svelte';
   import { structureOpenAiResponse } from '$lib/utils/structureOpenAiResponse';
   import type { QData } from '$lib/utils/structureOpenAiResponse';
@@ -8,7 +10,7 @@
   import TabContent from './TabContent.svelte';
 
   let body = {
-    questions: 2,
+    questions: 5,
     options: 3,
   };
   let questionsJson: Array<QData> = [];
@@ -87,6 +89,7 @@
         $input = mockData[templateId];
       }}
       handleSubmit={(e) => {
+        if ($isLoading) return;
         questionsJson = [];
         setTimeout(() => {
           handleSubmit(e);
@@ -116,13 +119,12 @@
           </div>
         </TabContent>
         <TabContent value={tabs[1].value} index={currentTab}>
-          <textarea
-            bind:this={textarea}
-            class="container bg-white w-full h-full p-5"
-            disabled
-          >
-            {JSON.stringify(questionsJson, null, 2)}
-          </textarea>
+          <CodeMirror
+            value={JSON.stringify(questionsJson, null, 2)}
+            lang={javascript()}
+            class="codemirror w-full px-5"
+            editable={false}
+          />
         </TabContent>
         <TabContent value={tabs[2].value} index={currentTab}>
           <!-- Rendered uestions here -->
@@ -134,6 +136,12 @@
 
 <style>
   .container {
+    max-height: 700px;
+    height: 700px;
+    overflow: scroll;
+  }
+
+  :global(.codemirror-wrapper) {
     max-height: 700px;
     height: 700px;
     overflow: scroll;
