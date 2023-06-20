@@ -6,6 +6,7 @@
   export let templateId = '';
   export let templates = [{ id: '', text: '' }];
   export let handleTemplateChange = () => {};
+  export let isLoading = false;
 
   $: text = text.length > 1500 ? text.slice(0, 1500) : text;
   $: questions = questions > 5 ? 5 : questions;
@@ -73,7 +74,8 @@
     </div>
     <div class="w-full flex justify-center">
       <button
-        class="bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-full font-semibold text-white flex items-center w-"
+        class="bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-full font-semibold text-white flex items-center"
+        disabled={isLoading}
         type="submit"
       >
         <svg

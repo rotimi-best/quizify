@@ -37,17 +37,20 @@
     { id: 'election', text: 'Nigerian 2023 Election' },
     { id: 'chatGPT', text: 'ChatGPT - AI chat bot' },
   ];
-  let templateId = templates[0].id || '';
+  let templateId = templates[0].id || 'oop';
 
   let currentTab = tabs[0].value;
 
-  const { input, handleSubmit, completion } = useCompletion({
+  const { input, handleSubmit, completion, isLoading } = useCompletion({
     initialInput: mockData[templateId],
     api: '/api/completion',
     body,
     onResponse: (res) => {
       if (res.status === 429) {
         alert('You are being rate limited. Please try again later.');
+      }
+      if (res.status === 401) {
+        console.log(res);
       }
     },
   });
@@ -92,6 +95,7 @@
       bind:questions={body.questions}
       bind:options={body.options}
       bind:text={$input}
+      isLoading={$isLoading}
     />
     <div class="w-3/5 ml-5">
       <Tabs {currentTab} {tabs} {onChange}>
