@@ -1,24 +1,23 @@
 <header>
-  <nav class="bg-white border-b-4 border-gray-200 dark:bg-gray-900">
+  <nav class="bg-white border-b-4 border-gray-200">
     <div
       class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
     >
       <a href="/" class="flex items-center">
         <img src="/quizify-logo.png" class="h-8 mr-3" alt="Flowbite Logo" />
-        <span
-          class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
+        <span class="self-center text-2xl font-semibold whitespace-nowrap"
           >Quizify</span
         >
       </a>
       <div class="block w-auto" id="navbar-default">
         <ul
-          class="font-medium flex justify-center items-center p-0 border-gray-100 rounded-lg md:bg-gray-50 flex-row space-x-8 mt-0 md:border-0 bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
+          class="font-medium flex justify-center items-center p-0 border-gray-100 rounded-lg md:bg-gray-50 flex-row space-x-8 mt-0 md:border-0 bg-white md:"
         >
           <li>
             <a
               href="https://twitter.com/rotimi_best"
               target="_blank"
-              class="flex p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 w-fit h-fit md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+              class="flex p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 w-fit h-fit md:p-0 md:"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -35,7 +34,7 @@
             <a
               href="https://github.com/rotimi-best/quizify"
               target="_blank"
-              class="flex p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 w-fit h-fit md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+              class="flex p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 w-fit h-fit md:p-0"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -21,7 +21,7 @@
 
 {#if open}
   <div
-    class="dialog fixed overflow-x-hidden overflow-y-auto inset-0 flex justify-center items-center z-50 bg-gray-100 dark:bg-gray-700 bg-opacity-50"
+    class="dialog fixed overflow-x-hidden overflow-y-auto inset-0 flex justify-center items-center z-50 bg-gray-100 bg-opacity-50"
     on:click={onClose}
     on:keydown={() => {
       onClose();
@@ -31,14 +31,14 @@
     <div
       class="{maxWidth || 'container'} {size === 'sm'
         ? 'small'
-        : ''} bg-white dark:bg-gray-800 mx-auto {width} shadow-lg p-5 pt-2 rounded-md"
+        : ''} bg-white mx-auto {width} shadow-lg p-5 pt-2 rounded-md"
       on:click={(e) => e.stopPropagation()}
       on:keydown={(e) => {
         e.stopPropagation();
       }}
     >
       <div class="flex items-center justify-between mb-4">
-        <h3 class="dark:text-white text-xl m-0">
+        <h3 class=" text-xl m-0">
           {modalHeading}
         </h3>
         <button on:click={onClose}>
