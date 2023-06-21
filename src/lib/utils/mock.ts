@@ -1,3 +1,5 @@
+import { TemplateId, type MockData } from '$lib/types/template';
+
 export const oop = `Object-Oriented Programming (OOP) is a programming paradigm based on the concept of "objects", which can contain data and code. The data is in the form of fields (often known as attributes or properties), and the code is in the form of procedures (often known as methods).
 
 A common feature of objects is that procedures (or methods) are attached to them and can access and modify the object's data fields. In this brand of OOP, there is usually a special name such as this or self used to refer to the current object. In OOP, computer programs are designed by making them out of objects that interact with one another. OOP languages are diverse, but the most popular ones are class-based, meaning that objects are instances of classes, which also determine their types.
@@ -30,10 +32,10 @@ By January 2023, it had become the fastest-growing consumer software application
 
 The chatbot is operated on a freemium model. Users on the free tier have access to the GPT-3.5 model, while paid subscribers to ChatGPT Plus have limited access to the more-advanced GPT-4 model, as well as priority access to new features.`;
 
-export const mockData = {
-  oop,
-  elonMusk,
-  spaceFlight,
-  election,
-  chatGPT,
+export const mockData: MockData = {
+  [TemplateId.oop]: oop,
+  [TemplateId.elonMusk]: elonMusk,
+  [TemplateId.spaceFlight]: spaceFlight,
+  [TemplateId.election]: election,
+  [TemplateId.chatGPT]: chatGPT,
 };

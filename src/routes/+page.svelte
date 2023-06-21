@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AiEditorIcon from '$lib/images/ai-editor.svg?raw';
   import CodeMirror from 'svelte-codemirror-editor';
   import { javascript } from '@codemirror/lang-javascript';
   import { useCompletion } from 'ai/svelte';
@@ -8,6 +9,8 @@
   import Sidebar from './Sidebar.svelte';
   import Tabs from './Tabs.svelte';
   import TabContent from './TabContent.svelte';
+  import Modal from './Modal.svelte';
+  import { TemplateId, type Templates } from '$lib/types/template';
 
   let body = {
     questions: 5,
@@ -17,6 +20,8 @@
   let rawText: Array<string> = [];
   let textarea: HTMLElement;
   let rawDiv: HTMLElement;
+
+  let openAiEditor = false;
 
   let tabs = [
     {
@@ -32,15 +37,15 @@
       value: 'quiz',
     },
   ];
-  let templates = [
-    { id: 'oop', text: 'About OOP' },
-    { id: 'elonMusk', text: 'Knowledge of Elon Musk' },
-    { id: 'spaceFlight', text: 'About Spaceflight' },
-    { id: 'election', text: 'Nigerian 2023 Election' },
-    { id: 'chatGPT', text: 'ChatGPT - AI chat bot' },
-  ];
-  let templateId = templates[0].id || 'oop';
 
+  let templates: Array<Templates> = [
+    { id: TemplateId.oop, text: 'About OOP' },
+    { id: TemplateId.elonMusk, text: 'Knowledge of Elon Musk' },
+    { id: TemplateId.spaceFlight, text: 'About Spaceflight' },
+    { id: TemplateId.election, text: 'Nigerian 2023 Election' },
+    { id: TemplateId.chatGPT, text: 'ChatGPT - AI chat bot' },
+  ];
+  let templateId: TemplateId = templates[0].id || TemplateId.oop;
   let currentTab = tabs[0].value;
 
   const { input, handleSubmit, completion, isLoading } = useCompletion({
@@ -80,8 +85,35 @@
   }
 </script>
 
-<main class="w-full mt-10">
-  <div class="w-4/5 m-auto flex justify-center">
+<Modal
+  onClose={() => (openAiEditor = false)}
+  bind:open={openAiEditor}
+  width="w-96"
+  modalHeading="Delete question"
+>
+  <Sidebar
+    {templates}
+    bind:templateId
+    handleTemplateChange={() => {
+      $input = mockData[templateId];
+    }}
+    handleSubmit={(e) => {
+      if ($isLoading) return;
+      questionsJson = [];
+      setTimeout(() => {
+        handleSubmit(e);
+        openAiEditor = false;
+      }, 500);
+    }}
+    bind:questions={body.questions}
+    bind:options={body.options}
+    bind:text={$input}
+    isLoading={$isLoading}
+  />
+</Modal>
+
+<main class="w-full md:mt-10">
+  <div class="w-full md:w-4/5 md:m-auto md:flex md:justify-center">
     <Sidebar
       {templates}
       bind:templateId
@@ -99,8 +131,9 @@
       bind:options={body.options}
       bind:text={$input}
       isLoading={$isLoading}
+      hideOnMobile={true}
     />
-    <div class="w-3/5 ml-5">
+    <div class="mx-2 md:w-3/5 md:ml-5">
       <Tabs {currentTab} {tabs} {onChange}>
         <TabContent value={tabs[0].value} index={currentTab}>
           <div
@@ -134,16 +167,30 @@
   </div>
 </main>
 
+<div class="absolute right-5 bottom-5 md:hidden">
+  <button
+    class="bg-sky-500 hover:bg-sky-700 px-5 py-3 text-sm leading-5 rounded-full font-semibold text-white flex items-center"
+    on:click={() => (openAiEditor = !openAiEditor)}
+  >
+    {@html AiEditorIcon}
+    <span class="ml-1">Open AI Editor</span>
+  </button>
+</div>
+
 <style>
-  .container {
-    max-height: 700px;
-    height: 700px;
+  .container,
+  :global(.codemirror-wrapper) {
+    max-height: 70vh;
+    height: 70vh;
     overflow: scroll;
   }
 
-  :global(.codemirror-wrapper) {
-    max-height: 700px;
-    height: 700px;
-    overflow: scroll;
+  @media only screen and (min-width: 768px) {
+    .container,
+    :global(.codemirror-wrapper) {
+      max-height: 700px;
+      height: 700px;
+      overflow: scroll;
+    }
   }
 </style>
