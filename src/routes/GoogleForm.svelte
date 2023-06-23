@@ -1,5 +1,5 @@
 <script lang="ts">
-  import credentials from '$lib/credentials.json';
+  import { PUBLIC_GOOGLE_OAUTH_CLIENT_ID } from '$env/static/public';
   import { Circle3 } from 'svelte-loading-spinners';
   import { form } from '$lib/stores/forms';
   import { getPostBodyFromQuestion } from '$lib/utils/googleapi';
@@ -99,7 +99,7 @@
     exporting = true;
     // @ts-ignore
     client = google.accounts.oauth2.initTokenClient({
-      client_id: credentials.client_id,
+      client_id: PUBLIC_GOOGLE_OAUTH_CLIENT_ID,
       scope: scopes.join(' '),
       callback: async (response = { access_token: '' }) => {
         console.log('responsePayload: ' + JSON.stringify(response));

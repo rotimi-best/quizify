@@ -101,7 +101,7 @@
 </form>
 
 <style>
-  form {
+  form section {
     width: 100%;
     max-height: 70vh;
     height: 70vh;
@@ -111,9 +111,12 @@
     max-height: 30vh;
   }
   @media only screen and (min-width: 768px) {
-    form {
+    form section {
       max-width: 380px;
       width: 380px;
+      max-height: 80vh;
+      height: 80vh;
+      overflow-y: auto;
     }
     #sidebar-text {
       height: 390px;
