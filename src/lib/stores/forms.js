@@ -9,3 +9,5 @@ export const form = writable({
   responderUri: '',
   revisionId: '',
 });
+
+export const isExporting = writable(false);

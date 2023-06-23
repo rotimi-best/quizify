@@ -11,7 +11,7 @@
   };
 </script>
 
-<div class="w-full flex flex-col border-4 border-gray-200 rounded-lg">
+<div class="w-full h-full flex flex-col border-4 border-gray-200 rounded-lg">
   <div class="p-2 flex justify-between border-b-4 border-gray-200">
     <div class="flex items-center">
       {#each tabs as tab}

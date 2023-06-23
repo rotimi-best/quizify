@@ -23,9 +23,19 @@
     class="{hideOnMobile &&
       'rounded-lg bg-white border-4 border-gray-200 p-5'} h-full"
   >
-    <div class="mb-5">
+    <div class="mb-6">
+      <h1 class="mb-3 font-sans font-extrabold text-4xl">
+        Create engaging quizzes in seconds
+      </h1>
+      <p class="font-light">
+        Place any text and it will generate questions and options with the
+        correct answer
+      </p>
+    </div>
+    <!-- <div class="mb-5">
       <label>
-        <strong>Examples</strong>:
+        <span class="font-sans font-bold">Examples</span>
+        :
         <select
           class="border border-gray-200 p-2"
           bind:value={templateId}
@@ -38,48 +48,55 @@
           {/each}
         </select>
       </label>
-    </div>
-    <div class="mb-5">
-      <h3 class="mb-2 font-bold">Text</h3>
+    </div> -->
+
+    <!-- Questions -->
+    <label class="block w-full mb-5">
+      <span class="block text-sm font-medium text-slate-700 mb-2"
+        >How many questions do you want to create?</span
+      >
+      <input
+        bind:value={questions}
+        class="w-full rounded-lg bg-gray-100 py-2 px-7"
+        type="number"
+        min="2"
+        max="5"
+      />
+      <p class="ml-1 text-sm text-slate-500">Max of 5</p>
+    </label>
+
+    <!-- Options -->
+    <label class="block w-full mb-5">
+      <span class="block text-sm font-medium text-slate-700 mb-2"
+        >How many options per questions do you want?</span
+      >
+      <input
+        bind:value={options}
+        class="rounded-lg w-full bg-gray-100 py-2 px-7"
+        type="number"
+        min="2"
+        max="4"
+      />
+      <p class="ml-1 text-sm text-slate-500">Max of 4</p>
+    </label>
+
+    <!-- Source text -->
+    <div class="mb-4">
+      <p class="mb-2 text-sm font-medium text-slate-700">
+        What text do you want to generate questions from?
+      </p>
       <textarea
         bind:value={text}
         id="sidebar-text"
-        class="w-full rounded-lg bg-gray-100 p-2 overflow-scroll"
-        placeholder="Paste a note"
+        class="w-full rounded-lg border-2 bg-gray-100 p-2 overflow-scroll"
+        placeholder="Paste your text here"
       />
-      <p class="text-sm text-right">
-        <strong>Max Character</strong>: {text.length} / 1500
+      <p class="text-slate-500 text-xs text-right">
+        {text.length} / 1500
       </p>
     </div>
 
-    <div class="flex justify-between w-full mb-5">
-      <label class="block">
-        <span class="block text-sm font-medium text-slate-700 mb-2"
-          >Question count</span
-        >
-        <input
-          bind:value={questions}
-          class="rounded-lg bg-gray-100 py-2 px-7"
-          type="number"
-          min="2"
-          max="5"
-        />
-        <p class="ml-1 text-sm">Max of 5</p>
-      </label>
-      <label class="block">
-        <span class="block text-sm font-medium text-slate-700 mb-2"
-          >Options count</span
-        >
-        <input
-          bind:value={options}
-          class="rounded-lg bg-gray-100 py-2 px-7"
-          type="number"
-          min="2"
-          max="4"
-        />
-        <p class="ml-1 text-sm">Max of 4</p>
-      </label>
-    </div>
+    <!-- Generate button -->
     <div class="w-full flex justify-center">
       <button
         id="generate-form"
@@ -114,13 +131,13 @@
     form section {
       max-width: 380px;
       width: 380px;
-      max-height: 80vh;
-      height: 80vh;
+      max-height: 83vh;
+      height: 83vh;
       overflow-y: auto;
     }
     #sidebar-text {
-      height: 390px;
-      max-height: 390px;
+      height: 195px;
+      max-height: 195px;
     }
   }
 </style>

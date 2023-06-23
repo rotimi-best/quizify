@@ -1,17 +1,21 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import AiEditorIcon from '$lib/images/ai-editor.svg?raw';
+  import TadaIcon from '$lib/images/tada.png';
+  import QuizIcon from '$lib/images/quiz.svg?raw';
   import CodeMirror from 'svelte-codemirror-editor';
   import { javascript } from '@codemirror/lang-javascript';
   import { useCompletion } from 'ai/svelte';
   import { structureOpenAiResponse } from '$lib/utils/structureOpenAiResponse';
   import { mockData } from '$lib/utils/mock';
+  import Confetti from './Confetti.svelte';
   import GoogleForm from './GoogleForm.svelte';
   import Sidebar from './Sidebar.svelte';
   import Tabs from './Tabs.svelte';
   import TabContent from './TabContent.svelte';
   import Modal from './Modal.svelte';
   import { form } from '$lib/stores/forms';
+  import { toggleConfetti } from '$lib/stores/confetti';
   import { initTour } from '$lib/utils/appTour';
   import { TemplateId, type Templates } from '$lib/types/template';
   import type { QData } from '$lib/types/questions';
@@ -102,7 +106,7 @@
   onClose={() => (openAiEditor = false)}
   bind:open={openAiEditor}
   width="w-96"
-  modalHeading="Delete question"
+  modalHeading=""
 >
   <Sidebar
     {templates}
@@ -124,9 +128,11 @@
     isLoading={$isLoading}
   />
 </Modal>
+<Confetti />
 
 <main class="w-full mt-4 md:mt-4">
   <div class="w-full md:w-4/5 md:m-auto md:flex md:justify-center">
+    <!-- Left Sidebar -->
     <Sidebar
       {templates}
       bind:templateId
@@ -146,29 +152,47 @@
       isLoading={$isLoading}
       hideOnMobile={true}
     />
+
+    <!-- Right Sidebar -->
     <div class="mx-2 md:w-3/5 md:ml-5">
+      <!-- Tabs -->
       <Tabs {currentTab} {tabs} {onChange}>
+        <!-- Google Button Logic -->
         <div slot="button">
-          <GoogleForm title={sheetData.title} questions={sheetData.questions} />
+          <GoogleForm
+            title={sheetData.title}
+            questions={sheetData.questions}
+            onCompleteExport={() => {
+              toggleConfetti();
+              currentTab = tabs[2].value;
+              setTimeout(toggleConfetti, 2500);
+            }}
+          />
         </div>
+
+        <!-- Text Tab -->
         <TabContent value={tabs[0].value} index={currentTab}>
           <div
             bind:this={rawDiv}
             class="container w-full rounded-lg bg-white p-5 shadow-lg"
           >
-            {#each rawText as text}
-              {#if isTitle(text)}
-                <h3 class="mt-4 text-lg font-semibold">{sheetData.title}</h3>
-              {:else if isQuestion(text)}
-                <p class="mt-4">{text}</p>
-              {:else}
-                <p class="ml-3 mb-2">{text}</p>
-              {/if}
+            {#if !rawText.length || !rawText[0].length}
+              <p class="font-sans font-bold">Your Generated output:</p>
             {:else}
-              <p>{$completion}</p>
-            {/each}
+              {#each rawText as text}
+                {#if isTitle(text)}
+                  <h3 class="mt-4 text-lg font-semibold">{sheetData.title}</h3>
+                {:else if isQuestion(text)}
+                  <p class="font-sans mt-4">{text}</p>
+                {:else}
+                  <p class="font-sans ml-3 mb-2">{text}</p>
+                {/if}
+              {/each}
+            {/if}
           </div>
         </TabContent>
+
+        <!-- JSON Tab -->
         <TabContent value={tabs[1].value} index={currentTab}>
           <CodeMirror
             value={JSON.stringify(sheetData, null, 2)}
@@ -177,17 +201,31 @@
             editable={false}
           />
         </TabContent>
+
+        <!-- Quizes Tab -->
         <TabContent value={tabs[2].value} index={currentTab}>
           <div class="container w-full rounded-lg bg-white p-5 shadow-lg">
-            {#if $form.info.title}
-              Hurray, open your <a
-                href="https://docs.google.com/forms/d/{$form.formId}"
-                target="_
+            {#if $form.info.title && $form.formId}
+              <div class="w-2/3 m-auto flex flex-col items-center mt-10">
+                <img src={TadaIcon} alt="tada icon" width="120" height="120" />
+                <p class="font-sans text-4xl my-3">Hurray your quiz is live</p>
+                <a
+                  href="https://docs.google.com/forms/d/{$form.formId}"
+                  target="_
                 "
-                class="underline text-yellow-600">form</a
-              >
+                  class="border-4 border-yellow-400 px-5 py-2 text-sm leading-5 rounded-lg font-semibold"
+                  >Open Google Form</a
+                >
+              </div>
             {:else}
-              No form generated
+              <div class="w-2/3 m-auto flex flex-col items-center mt-10">
+                {@html QuizIcon}
+                <p class="font-sans text-4xl my-3">No quiz published</p>
+                <p class="font-sans w-60">
+                  Hit the <strong>Generate</strong> button on the left to generate
+                  your first quiz
+                </p>
+              </div>
             {/if}
           </div>
         </TabContent>
@@ -196,6 +234,7 @@
   </div>
 </main>
 
+<!-- Mobile Button -->
 <div class="absolute right-5 bottom-5 md:hidden">
   <button
     class="bg-yellow-500 hover:bg-yellow-700 px-5 py-3 text-sm leading-5 rounded-lg font-semibold text-white flex items-center"
@@ -209,8 +248,8 @@
 <style>
   .container,
   :global(.codemirror-wrapper) {
-    max-height: 70vh;
-    height: 70vh;
+    max-height: 73vh;
+    height: 73vh;
     overflow-y: scroll;
   }
 </style>

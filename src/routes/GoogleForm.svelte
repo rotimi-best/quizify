@@ -1,14 +1,14 @@
 <script lang="ts">
   import { PUBLIC_GOOGLE_OAUTH_CLIENT_ID } from '$env/static/public';
   import { Circle3 } from 'svelte-loading-spinners';
-  import { form } from '$lib/stores/forms';
+  import { form, isExporting } from '$lib/stores/forms';
   import { getPostBodyFromQuestion } from '$lib/utils/googleapi';
   import type { QData } from '$lib/types/questions';
 
   export let title = 'Some random title';
   export let questions: Array<QData>;
+  export let onCompleteExport = () => {};
 
-  let exporting = false;
   let client;
   let access_token = '';
   let auth_token = { access_token: '' };
@@ -22,19 +22,23 @@
   ];
 
   async function makeRequest({ path = '', method = 'GET', body = {} }) {
-    const response = await fetch(
-      'https://forms.googleapis.com/v1/forms' + path,
-      {
-        method,
-        headers: {
-          Authorization: 'Bearer ' + access_token,
-        },
-        body: method === 'GET' ? undefined : JSON.stringify(body),
-      }
-    );
-    const result = response.json();
+    try {
+      const response = await fetch(
+        'https://forms.googleapis.com/v1/forms' + path,
+        {
+          method,
+          headers: {
+            Authorization: 'Bearer ' + access_token,
+          },
+          body: method === 'GET' ? undefined : JSON.stringify(body),
+        }
+      );
+      const result = await response.json();
 
-    return result;
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async function getForm() {
@@ -95,8 +99,9 @@
       alert('Hit the Generate button first to get your form content');
       return;
     }
+
     auth_token = JSON.parse(localStorage.getItem('auth_token') || '{}');
-    exporting = true;
+    $isExporting = true;
     // @ts-ignore
     client = google.accounts.oauth2.initTokenClient({
       client_id: PUBLIC_GOOGLE_OAUTH_CLIENT_ID,
@@ -112,13 +117,16 @@
           await addQuestionsToForm();
           await makeFormQuiz();
           await getForm();
+          onCompleteExport();
         } catch (error) {
           console.error(
             'Something went wrong in the process, please try again later'
           );
+
+          alert('Something went wrong while exporting, please try again later');
         }
 
-        exporting = false;
+        $isExporting = false;
       },
     });
     client.requestAccessToken();
@@ -129,8 +137,9 @@
   id="google-forms"
   class="bg-white px-5 py-3 text-sm leading-5 rounded-md font-semibold shadow-md text-black flex items-center"
   on:click={connectToGoogle}
+  disabled={$isExporting}
 >
-  {#if exporting}
+  {#if $isExporting}
     <Circle3 size="30" duration="1s" />
   {:else}
     <img
