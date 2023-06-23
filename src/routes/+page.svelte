@@ -125,7 +125,7 @@
   />
 </Modal>
 
-<main class="w-full mt-4 md:mt-10">
+<main class="w-full mt-4 md:mt-4">
   <div class="w-full md:w-4/5 md:m-auto md:flex md:justify-center">
     <Sidebar
       {templates}

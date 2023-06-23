@@ -114,8 +114,6 @@
     form {
       max-width: 380px;
       width: 380px;
-      max-height: 780px;
-      height: 780px;
     }
     #sidebar-text {
       height: 390px;
