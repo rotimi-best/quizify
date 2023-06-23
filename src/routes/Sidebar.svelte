@@ -1,6 +1,7 @@
 <script lang="ts">
   import AiIcon from '$lib/images/ai.svg?raw';
   import type { TemplateId, Templates } from '$lib/types/template';
+  import { Circle3 } from 'svelte-loading-spinners';
 
   export let text = '';
   export let questions = 2;
@@ -18,10 +19,13 @@
 </script>
 
 <form class="{hideOnMobile && 'hidden'} md:block" on:submit={handleSubmit}>
-  <section class="{hideOnMobile && 'rounded-lg bg-white shadow-lg p-5'} h-full">
+  <section
+    class="{hideOnMobile &&
+      'rounded-lg bg-white border-4 border-gray-200 p-5'} h-full"
+  >
     <div class="mb-5">
       <label>
-        <strong>Templates</strong>:
+        <strong>Examples</strong>:
         <select
           class="border border-gray-200 p-2"
           bind:value={templateId}
@@ -78,12 +82,19 @@
     </div>
     <div class="w-full flex justify-center">
       <button
-        class="bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-full font-semibold text-white flex items-center"
+        id="generate-form"
+        class="{isLoading
+          ? 'bg-white border-2 border-gray-300'
+          : 'bg-yellow-500'} hover:bg-yellow-700 px-5 py-2 text-sm leading-5 rounded-lg font-semibold text-white flex items-center"
         disabled={isLoading}
         type="submit"
       >
-        {@html AiIcon}
-        <span class="ml-1">Generate</span>
+        {#if isLoading}
+          <Circle3 size="30" duration="1s" />
+        {:else}
+          {@html AiIcon}
+          <span class="ml-1">Generate</span>
+        {/if}
       </button>
     </div>
   </section>

@@ -1,24 +1,18 @@
-export interface Params {
-  questions: number;
-  options: number;
-  text: string;
-}
-
-export interface QData {
-  title: string;
-  options: Array<string>;
-  answer: string;
-}
+import type { QData, Params } from '../types/questions';
 
 export const structureOpenAiResponse = (params: Params) => {
   let questions: Array<QData> = [];
+  let summary = '';
   const textLines = params.text.split('\n');
 
   textLines.forEach((line: string) => {
+    const isSummary = /^Summary:/.test(line.trim());
     const isQuestion = /^\d/.test(line.trim());
     const isOption = /^\w[\)\.]/.test(line.trim());
 
-    if (isQuestion) {
+    if (isSummary) {
+      summary = line.replace('Summary:', '');
+    } else if (isQuestion) {
       const title = line.trim();
       const qIndex = parseInt(title[0]);
       const isUpdate = !!questions[qIndex - 1];
@@ -67,7 +61,7 @@ export const structureOpenAiResponse = (params: Params) => {
     }
   });
 
-  return { data: questions, raw: textLines };
+  return { data: questions, raw: textLines, summary };
 };
 
 // const splitOptions = (question: string, optionsTotal: number) => {

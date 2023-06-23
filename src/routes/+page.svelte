@@ -1,22 +1,29 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import AiEditorIcon from '$lib/images/ai-editor.svg?raw';
   import CodeMirror from 'svelte-codemirror-editor';
   import { javascript } from '@codemirror/lang-javascript';
   import { useCompletion } from 'ai/svelte';
   import { structureOpenAiResponse } from '$lib/utils/structureOpenAiResponse';
-  import type { QData } from '$lib/utils/structureOpenAiResponse';
   import { mockData } from '$lib/utils/mock';
+  import GoogleForm from './GoogleForm.svelte';
   import Sidebar from './Sidebar.svelte';
   import Tabs from './Tabs.svelte';
   import TabContent from './TabContent.svelte';
   import Modal from './Modal.svelte';
+  import { form } from '$lib/stores/forms';
+  import { initTour } from '$lib/utils/appTour';
   import { TemplateId, type Templates } from '$lib/types/template';
+  import type { QData } from '$lib/types/questions';
 
   let body = {
     questions: 5,
     options: 3,
   };
-  let questionsJson: Array<QData> = [];
+  let sheetData: { title: string; questions: Array<QData> } = {
+    title: '',
+    questions: [],
+  };
   let rawText: Array<string> = [];
   let textarea: HTMLElement;
   let rawDiv: HTMLElement;
@@ -62,20 +69,26 @@
     },
   });
 
+  const isTitle = (line: string) => /^Summary:/.test(line.trim());
   const isQuestion = (line: string) => /^\d/.test(line.trim());
   const onChange =
     (tab = '') =>
     () =>
       (currentTab = tab);
 
+  onMount(() => {
+    initTour();
+  });
+
   $: {
-    const { data, raw } = structureOpenAiResponse({
+    const { data, raw, summary } = structureOpenAiResponse({
       ...body,
       text: $completion,
     });
 
-    questionsJson = data;
+    sheetData.questions = data;
     rawText = raw;
+    sheetData.title = summary;
     if (textarea) {
       textarea.scrollTop = textarea.scrollHeight;
     }
@@ -99,7 +112,7 @@
     }}
     handleSubmit={(e) => {
       if ($isLoading) return;
-      questionsJson = [];
+      sheetData.questions = [];
       setTimeout(() => {
         handleSubmit(e);
         openAiEditor = false;
@@ -112,7 +125,7 @@
   />
 </Modal>
 
-<main class="w-full md:mt-10">
+<main class="w-full mt-4 md:mt-10">
   <div class="w-full md:w-4/5 md:m-auto md:flex md:justify-center">
     <Sidebar
       {templates}
@@ -122,7 +135,7 @@
       }}
       handleSubmit={(e) => {
         if ($isLoading) return;
-        questionsJson = [];
+        sheetData.questions = [];
         setTimeout(() => {
           handleSubmit(e);
         }, 500);
@@ -135,13 +148,18 @@
     />
     <div class="mx-2 md:w-3/5 md:ml-5">
       <Tabs {currentTab} {tabs} {onChange}>
+        <div slot="button">
+          <GoogleForm title={sheetData.title} questions={sheetData.questions} />
+        </div>
         <TabContent value={tabs[0].value} index={currentTab}>
           <div
             bind:this={rawDiv}
             class="container w-full rounded-lg bg-white p-5 shadow-lg"
           >
             {#each rawText as text}
-              {#if isQuestion(text)}
+              {#if isTitle(text)}
+                <h3 class="mt-4 text-lg font-semibold">{sheetData.title}</h3>
+              {:else if isQuestion(text)}
                 <p class="mt-4">{text}</p>
               {:else}
                 <p class="ml-3 mb-2">{text}</p>
@@ -153,14 +171,25 @@
         </TabContent>
         <TabContent value={tabs[1].value} index={currentTab}>
           <CodeMirror
-            value={JSON.stringify(questionsJson, null, 2)}
+            value={JSON.stringify(sheetData, null, 2)}
             lang={javascript()}
             class="codemirror w-full px-5"
             editable={false}
           />
         </TabContent>
         <TabContent value={tabs[2].value} index={currentTab}>
-          <!-- Rendered uestions here -->
+          <div class="container w-full rounded-lg bg-white p-5 shadow-lg">
+            {#if $form.info.title}
+              Hurray, open your <a
+                href="https://docs.google.com/forms/d/{$form.formId}"
+                target="_
+                "
+                class="underline text-yellow-600">form</a
+              >
+            {:else}
+              No form generated
+            {/if}
+          </div>
         </TabContent>
       </Tabs>
     </div>
@@ -169,7 +198,7 @@
 
 <div class="absolute right-5 bottom-5 md:hidden">
   <button
-    class="bg-sky-500 hover:bg-sky-700 px-5 py-3 text-sm leading-5 rounded-full font-semibold text-white flex items-center"
+    class="bg-yellow-500 hover:bg-yellow-700 px-5 py-3 text-sm leading-5 rounded-lg font-semibold text-white flex items-center"
     on:click={() => (openAiEditor = !openAiEditor)}
   >
     {@html AiEditorIcon}
@@ -182,15 +211,6 @@
   :global(.codemirror-wrapper) {
     max-height: 70vh;
     height: 70vh;
-    overflow: scroll;
-  }
-
-  @media only screen and (min-width: 768px) {
-    .container,
-    :global(.codemirror-wrapper) {
-      max-height: 700px;
-      height: 700px;
-      overflow: scroll;
-    }
+    overflow-y: scroll;
   }
 </style>

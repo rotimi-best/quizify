@@ -534,7 +534,7 @@
   <p>
     To request a copy for your information, unsubscribe from our email list,
     request for your data to be deleted, or ask a question about your data
-    privacy, contact us at quizify@gmail.com
+    privacy, contact us at quizifyai@gmail.com
   </p>
 
   <p><strong>Write to us at:</strong></p>

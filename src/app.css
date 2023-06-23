@@ -32,3 +32,27 @@ html {
 body {
   background-color: #fafafa;
 }
+
+.shepherd-header {
+  padding: 0.5rem;
+  border-bottom: 4px solid rgb(229 231 235);
+}
+
+.shepherd-text {
+  padding: 1rem;
+}
+
+.shepherd-footer {
+  padding: 1rem;
+  border-top: 4px solid rgb(229 231 235);
+}
+
+.shepherd-cancel-icon {
+  background-color: rgb(229 231 235);
+  padding: 0.1rem 0.55rem;
+  border-radius: 50px;
+}
+
+.shepherd-modal-overlay-container {
+  display: none;
+}

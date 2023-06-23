@@ -1,0 +1,30 @@
+export interface Params {
+  questions: number;
+  options: number;
+  text: string;
+}
+
+export interface QData {
+  title: string;
+  options: Array<string>;
+  answer: string;
+}
+
+export interface Request {
+  createItem: {
+    item: {
+      title: string;
+      questionItem: {
+        question: {
+          choiceQuestion: {
+            options: Array<{ value: string }>;
+            type: string;
+          };
+        };
+      };
+    };
+    location: {
+      index: number;
+    };
+  };
+}

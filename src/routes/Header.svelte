@@ -1,5 +1,5 @@
-<header>
-  <nav class="bg-white border-b-4 border-gray-200">
+<header class="w-full">
+  <nav class="bg-white w-4/5 m-auto border-4 border-gray-200 rounded-lg mt-2">
     <div
       class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
     >
@@ -11,13 +11,13 @@
       </a>
       <div class="block w-auto" id="navbar-default">
         <ul
-          class="font-medium flex justify-center items-center p-0 border-gray-100 rounded-lg md:bg-gray-50 flex-row space-x-8 mt-0 md:border-0 bg-white md:"
+          class="font-medium flex justify-center items-center p-0 border-gray-100 rounded-lg flex-row space-x-8 mt-0 md:border-0 bg-white md:"
         >
           <li>
             <a
               href="https://twitter.com/rotimi_best"
               target="_blank"
-              class="flex p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 w-fit h-fit md:p-0 md:"
+              class="flex p-0 text-gray-900 rounded md:hover:bg-transparent md:border-0 md:hover:text-yellow-700 w-fit h-fit md:p-0 md:"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -34,7 +34,7 @@
             <a
               href="https://github.com/rotimi-best/quizify"
               target="_blank"
-              class="flex p-0 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 w-fit h-fit md:p-0"
+              class="flex p-0 text-gray-900 rounded md:hover:bg-transparent md:border-0 md:hover:text-yellow-700 w-fit h-fit md:p-0"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -53,3 +53,9 @@
     </div>
   </nav>
 </header>
+
+<style>
+  nav {
+    max-width: 1136px;
+  }
+</style>
