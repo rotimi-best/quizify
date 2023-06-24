@@ -5,6 +5,7 @@
   import { getPostBodyFromQuestion } from '$lib/utils/googleapi';
   import type { QData } from '$lib/types/questions';
   import { goto } from '$app/navigation';
+  import { toast } from '@zerodevx/svelte-toast';
 
   export let title = 'Some random title';
   export let questions: Array<QData>;
@@ -107,7 +108,7 @@
       return;
     }
     if (!questions.length) {
-      alert('Hit the Generate button first to get your form content');
+      toast.push('Hit the Generate button first to get your form content');
       return;
     }
 
@@ -135,7 +136,10 @@
             'Something went wrong in the process, please try again later'
           );
 
-          alert('Something went wrong while exporting, please try again later');
+          toast.push(
+            'Something went wrong while exporting, please try again later',
+            { classes: ['failed'] }
+          );
         }
 
         $isExporting = false;

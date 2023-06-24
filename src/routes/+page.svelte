@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { toast } from '@zerodevx/svelte-toast';
   import AiEditorIcon from '$lib/images/ai-editor.svg?raw';
   import TadaIcon from '$lib/images/tada.png';
   import QuizIcon from '$lib/images/quiz.svg?raw';
@@ -66,7 +67,9 @@
     body,
     onResponse: (res) => {
       if (res.status === 429) {
-        alert('You are being rate limited. Please try again later.');
+        toast.push('You are being rate limited. Please try again later.', {
+          classes: ['failed'],
+        });
       }
       if (res.status === 401) {
         console.log(res);
@@ -173,34 +176,43 @@
 
         <!-- Text Tab -->
         <TabContent value={tabs[0].value} index={currentTab}>
-          <div
-            bind:this={rawDiv}
-            class="container w-full rounded-lg bg-white p-5 shadow-lg relative"
-          >
-            {#if !rawText.length || !rawText[0].length}
-              <p class="font-sans font-bold">Your Generated output:</p>
-            {:else}
-              {#each rawText as text}
-                {#if isTitle(text)}
-                  <h3 class="mt-4 text-lg font-semibold">{sheetData.title}</h3>
-                {:else if isQuestion(text)}
-                  <p class="font-sans mt-4">{text}</p>
-                {:else}
-                  <p class="font-sans ml-3 mb-2">{text}</p>
-                {/if}
-              {/each}
-
-              {#if !$isLoading}
-                <!-- Copy Button -->
-                <button
-                  class="absolute top-2 right-1 p-2 rounded-lg border border-gray-200 hover:bg-gray-200 hover:shadow-2xl transition-shadow ease-in delay-100 flex items-center"
-                  type="button"
-                  on:click={() => {}}
-                >
-                  {@html CopyIcon}
-                  <span>Copy</span>
-                </button>
+          <div class="relative">
+            <div
+              bind:this={rawDiv}
+              class="container w-full rounded-lg bg-white p-5 shadow-lg relative"
+            >
+              {#if !rawText.length || !rawText[0].length}
+                <p class="font-sans font-bold">Your Generated output:</p>
+              {:else}
+                {#each rawText as text}
+                  {#if isTitle(text)}
+                    <h3 class="mt-4 text-lg font-semibold">
+                      {sheetData.title}
+                    </h3>
+                  {:else if isQuestion(text)}
+                    <p class="font-sans mt-4">{text}</p>
+                  {:else}
+                    <p class="font-sans ml-3 mb-2">{text}</p>
+                  {/if}
+                {/each}
               {/if}
+            </div>
+
+            {#if !$isLoading}
+              <!-- Copy Button -->
+              <button
+                class="absolute top-2 right-1 p-2 rounded-lg border border-gray-200 hover:bg-gray-200 hover:shadow-2xl transition-shadow ease-in delay-100 flex items-center"
+                type="button"
+                on:click={() => {
+                  copy(rawDiv.innerHTML, {
+                    asHtml: true,
+                  });
+                  toast.push('Copied');
+                }}
+              >
+                {@html CopyIcon}
+                <span>Copy</span>
+              </button>
             {/if}
           </div>
         </TabContent>
@@ -219,7 +231,12 @@
             <button
               class="absolute top-2 right-1 p-2 rounded-lg border border-gray-200 hover:bg-gray-200 hover:shadow-2xl transition-shadow ease-in delay-100 flex items-center"
               type="button"
-              on:click={() => {}}
+              on:click={() => {
+                copy(JSON.stringify(sheetData, null, 2), {
+                  asHtml: true,
+                });
+                toast.push('Copied');
+              }}
             >
               {@html CopyIcon}
               <span>Copy</span>

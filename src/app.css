@@ -6,7 +6,33 @@
 html {
   --scrollbarBG: #fff;
   --thumbBG: #ccc;
+
+  /* Toast Variables */
+  --toastBackground: black;
+  --toastColor: #fff;
+  --toastBarBackground: black;
+  --toastBorderRadius: 5px;
+  --toastBarHeight: 0;
+  --toastBtnContent: '';
+  --toastBtnWidth: 0px;
+  --toastWidth: fit-content;
+  --toastMsgPadding: 0.25rem 1rem;
+  --toastMinHeight: fit-content;
+  --toastHeight: fit-content;
+  /* Toast Buttom */
+  --toastContainerTop: auto;
+  --toastContainerRight: auto;
+  --toastContainerBottom: 8rem;
+  --toastContainerLeft: calc(50vw - 8rem);
+
   scroll-behavior: smooth;
+}
+
+.failed {
+  --toastBackground: red;
+}
+._toastMsg {
+  font-weight: 600;
 }
 
 * {
