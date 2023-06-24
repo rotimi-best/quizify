@@ -1,5 +1,7 @@
 <script lang="ts">
   import AiIcon from '$lib/images/ai.svg?raw';
+  import ArrowRightcon from '$lib/images/arrow-right.svg?raw';
+  import ArrowDownIcon from '$lib/images/arrow-down.svg?raw';
   import type { TemplateId, Templates } from '$lib/types/template';
   import { Circle3 } from 'svelte-loading-spinners';
 
@@ -12,6 +14,8 @@
   export let handleTemplateChange = () => {};
   export let isLoading = false;
   export let hideOnMobile = false;
+
+  let showExamples = false;
 
   $: text = text.length > 1500 ? text.slice(0, 1500) : text;
   $: questions = questions > 5 ? 5 : questions;
@@ -85,6 +89,38 @@
       <p class="mb-2 text-sm font-medium text-slate-700">
         What text do you want to generate questions from?
       </p>
+      <div class="mb-3">
+        <button
+          class="px-2 rounded-full bg-gray-200 w-fit text-sm flex items-center"
+          on:click={() => (showExamples = !showExamples)}
+          type="button"
+        >
+          <span class="mr-3">See Examples</span>
+          {#if showExamples}
+            {@html ArrowDownIcon}
+          {:else}
+            {@html ArrowRightcon}
+          {/if}
+        </button>
+        {#if showExamples}
+          <div class="flex mt-2 w-full justify-start flex-wrap">
+            {#each templates as template}
+              <button
+                class="{templateId === template.id &&
+                  'bg-gray-200'} px-2 py-3 mr-2 rounded-lg w-fit mb-2 border border-gray-200 hover:bg-gray-200 text-sm flex items-center"
+                on:click={() => {
+                  templateId = template.id;
+                  handleTemplateChange();
+                }}
+                type="button"
+              >
+                {template.text}
+              </button>
+            {/each}
+          </div>
+        {/if}
+      </div>
+
       <textarea
         bind:value={text}
         id="sidebar-text"
@@ -102,7 +138,7 @@
         id="generate-form"
         class="{isLoading
           ? 'bg-white border-2 border-gray-300'
-          : 'bg-yellow-500'} hover:bg-yellow-700 px-5 py-2 text-sm leading-5 rounded-lg font-semibold text-white flex items-center"
+          : 'bg-yellow-500'} px-5 py-2 text-sm leading-5 rounded-lg font-semibold text-white flex items-center hover:shadow-2xl transition-shadow ease-in delay-100"
         disabled={isLoading}
         type="submit"
       >

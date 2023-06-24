@@ -3,6 +3,7 @@
   import AiEditorIcon from '$lib/images/ai-editor.svg?raw';
   import TadaIcon from '$lib/images/tada.png';
   import QuizIcon from '$lib/images/quiz.svg?raw';
+  import CopyIcon from '$lib/images/copy.svg?raw';
   import CodeMirror from 'svelte-codemirror-editor';
   import { javascript } from '@codemirror/lang-javascript';
   import { useCompletion } from 'ai/svelte';
@@ -50,9 +51,9 @@
   ];
 
   let templates: Array<Templates> = [
-    { id: TemplateId.oop, text: 'About OOP' },
-    { id: TemplateId.elonMusk, text: 'Knowledge of Elon Musk' },
     { id: TemplateId.spaceFlight, text: 'About Spaceflight' },
+    { id: TemplateId.oop, text: 'On OOP' },
+    { id: TemplateId.elonMusk, text: 'Elon Musk' },
     { id: TemplateId.election, text: 'Nigerian 2023 Election' },
     { id: TemplateId.chatGPT, text: 'ChatGPT - AI chat bot' },
   ];
@@ -174,7 +175,7 @@
         <TabContent value={tabs[0].value} index={currentTab}>
           <div
             bind:this={rawDiv}
-            class="container w-full rounded-lg bg-white p-5 shadow-lg"
+            class="container w-full rounded-lg bg-white p-5 shadow-lg relative"
           >
             {#if !rawText.length || !rawText[0].length}
               <p class="font-sans font-bold">Your Generated output:</p>
@@ -188,18 +189,42 @@
                   <p class="font-sans ml-3 mb-2">{text}</p>
                 {/if}
               {/each}
+
+              {#if !$isLoading}
+                <!-- Copy Button -->
+                <button
+                  class="absolute top-2 right-1 p-2 rounded-lg border border-gray-200 hover:bg-gray-200 hover:shadow-2xl transition-shadow ease-in delay-100 flex items-center"
+                  type="button"
+                  on:click={() => {}}
+                >
+                  {@html CopyIcon}
+                  <span>Copy</span>
+                </button>
+              {/if}
             {/if}
           </div>
         </TabContent>
 
         <!-- JSON Tab -->
         <TabContent value={tabs[1].value} index={currentTab}>
-          <CodeMirror
-            value={JSON.stringify(sheetData, null, 2)}
-            lang={javascript()}
-            class="codemirror w-full px-5"
-            editable={false}
-          />
+          <div class="relative">
+            <CodeMirror
+              value={JSON.stringify(sheetData, null, 2)}
+              lang={javascript()}
+              class="codemirror w-full px-5"
+              editable={false}
+            />
+
+            <!-- Copy Button -->
+            <button
+              class="absolute top-2 right-1 p-2 rounded-lg border border-gray-200 hover:bg-gray-200 hover:shadow-2xl transition-shadow ease-in delay-100 flex items-center"
+              type="button"
+              on:click={() => {}}
+            >
+              {@html CopyIcon}
+              <span>Copy</span>
+            </button>
+          </div>
         </TabContent>
 
         <!-- Quizes Tab -->
@@ -208,7 +233,7 @@
             {#if $form.info.title && $form.formId}
               <div class="w-2/3 m-auto flex flex-col items-center mt-10">
                 <img src={TadaIcon} alt="tada icon" width="120" height="120" />
-                <p class="font-sans text-4xl my-3">Hurray your quiz is live</p>
+                <p class="font-sans text-4xl my-3">Hurray your Quiz is Live</p>
                 <a
                   href="https://docs.google.com/forms/d/{$form.formId}"
                   target="_
@@ -237,7 +262,7 @@
 <!-- Mobile Button -->
 <div class="absolute right-5 bottom-5 md:hidden">
   <button
-    class="bg-yellow-500 hover:bg-yellow-700 px-5 py-3 text-sm leading-5 rounded-lg font-semibold text-white flex items-center"
+    class="bg-yellow-500 hover:bg-yellow-700 px-5 py-3 text-sm leading-5 rounded-lg font-semibold text-white flex items-center hover:shadow-2xl transition-shadow ease-in delay-100"
     on:click={() => (openAiEditor = !openAiEditor)}
   >
     {@html AiEditorIcon}

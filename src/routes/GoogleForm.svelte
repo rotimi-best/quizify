@@ -4,6 +4,7 @@
   import { form, isExporting } from '$lib/stores/forms';
   import { getPostBodyFromQuestion } from '$lib/utils/googleapi';
   import type { QData } from '$lib/types/questions';
+  import { goto } from '$app/navigation';
 
   export let title = 'Some random title';
   export let questions: Array<QData>;
@@ -12,6 +13,7 @@
   let client;
   let access_token = '';
   let auth_token = { access_token: '' };
+  let isFormCreated = false;
 
   // Set the scopes for the API request
   const scopes = [
@@ -95,6 +97,15 @@
   }
 
   async function connectToGoogle() {
+    if (isFormCreated) {
+      const url = `https://docs.google.com/forms/d/${$form.formId}`;
+      if (window !== null) {
+        window?.open(url, '_blank')?.focus();
+      } else {
+        goto(url);
+      }
+      return;
+    }
     if (!questions.length) {
       alert('Hit the Generate button first to get your form content');
       return;
@@ -118,6 +129,7 @@
           await makeFormQuiz();
           await getForm();
           onCompleteExport();
+          isFormCreated = true;
         } catch (error) {
           console.error(
             'Something went wrong in the process, please try again later'
@@ -135,7 +147,7 @@
 
 <button
   id="google-forms"
-  class="bg-white px-5 py-3 text-sm leading-5 rounded-md font-semibold shadow-md text-black flex items-center"
+  class="bg-white px-5 py-3 text-sm leading-5 rounded-md font-semibold shadow-md text-black flex items-center hover:shadow-2xl transition-shadow ease-in delay-100"
   on:click={connectToGoogle}
   disabled={$isExporting}
 >
@@ -152,6 +164,12 @@
       loading="lazy"
       style="color:transparent"
     />
-    <span class="ml-3 hidden md:block">Publish to Google Forms</span>
+    <span class="ml-3 hidden md:block">
+      {#if isFormCreated}
+        View Form
+      {:else}
+        Publish to Google Forms
+      {/if}
+    </span>
   {/if}
 </button>
