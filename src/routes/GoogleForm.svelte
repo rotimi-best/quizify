@@ -18,10 +18,10 @@
 
   // Set the scopes for the API request
   const scopes = [
-    'https://www.googleapis.com/auth/forms',
+    //'https://www.googleapis.com/auth/forms',
     // 'https://www.googleapis.com/auth/drive',
-    // 'https://www.googleapis.com/auth/drive.file',
-    'https://www.googleapis.com/auth/forms.body',
+     'https://www.googleapis.com/auth/drive.file',
+    //'https://www.googleapis.com/auth/forms.body',
   ];
 
   async function makeRequest({ path = '', method = 'GET', body = {} }) {
