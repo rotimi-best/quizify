@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { toast } from '@zerodevx/svelte-toast';
+  import copy from 'copy-html-to-clipboard';
   import AiEditorIcon from '$lib/images/ai-editor.svg?raw';
   import TadaIcon from '$lib/images/tada.png';
   import QuizIcon from '$lib/images/quiz.svg?raw';
@@ -25,6 +26,7 @@
   let body = {
     questions: 5,
     options: 3,
+    continueTyping: false,
   };
   let sheetData: { title: string; questions: Array<QData> } = {
     title: '',
@@ -35,6 +37,7 @@
   let rawDiv: HTMLElement;
 
   let openAiEditor = false;
+  let showContinueTyping = false;
 
   let tabs = [
     {
@@ -66,7 +69,7 @@
     api: '/api/completion',
     body,
     onResponse: (res) => {
-      console.log('useCompletion res', res)
+      console.log('useCompletion res', res);
       if (res.status === 429) {
         toast.push('You are being rate limited. Please try again later.', {
           classes: ['failed'],
@@ -105,6 +108,13 @@
     if (rawDiv) {
       rawDiv.scrollTop = rawDiv.scrollHeight;
     }
+
+    showContinueTyping =
+      data.length > 0 &&
+      (data.length < body.questions ||
+        data.some((q) => q.options.length < body.options));
+
+    console.log('showContinueTyping', showContinueTyping);
   }
 </script>
 
@@ -128,10 +138,12 @@
         openAiEditor = false;
       }, 500);
     }}
+    bind:continueTyping={body.continueTyping}
     bind:questions={body.questions}
     bind:options={body.options}
     bind:text={$input}
     isLoading={$isLoading}
+    {showContinueTyping}
   />
 </Modal>
 <Confetti />
@@ -152,11 +164,13 @@
           handleSubmit(e);
         }, 500);
       }}
+      bind:continueTyping={body.continueTyping}
       bind:questions={body.questions}
       bind:options={body.options}
       bind:text={$input}
       isLoading={$isLoading}
       hideOnMobile={true}
+      {showContinueTyping}
     />
 
     <!-- Right Sidebar -->

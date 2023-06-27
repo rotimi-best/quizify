@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { getAppSettings, PLAN } from '$lib/utils/settings';
   import AiIcon from '$lib/images/ai.svg?raw';
   import ArrowRightcon from '$lib/images/arrow-right.svg?raw';
   import ArrowDownIcon from '$lib/images/arrow-down.svg?raw';
@@ -6,20 +7,27 @@
   import { Circle3 } from 'svelte-loading-spinners';
 
   export let text = '';
-  export let questions = 2;
-  export let options = 2;
+  export let questions = 0;
+  export let options = 0;
   export let handleSubmit = (e = {}) => {};
   export let templateId: TemplateId;
   export let templates: Array<Templates>;
   export let handleTemplateChange = () => {};
   export let isLoading = false;
   export let hideOnMobile = false;
+  export let continueTyping = false;
+  export let showContinueTyping = false;
+
+  const SETTINGS = getAppSettings(PLAN.FREE);
+  const QUESTIONS_LIMIT = SETTINGS.QUESTION_LIMIT;
+  const TEXT_LIMIT = SETTINGS.TEXT_LIMIT;
+  const OPTIONS_LIMIT = SETTINGS.OPTIONS_LIMIT;
 
   let showExamples = false;
 
-  $: text = text.length > 1500 ? text.slice(0, 1500) : text;
-  $: questions = questions > 5 ? 5 : questions;
-  $: options = options > 4 ? 4 : options;
+  $: text = text.length > TEXT_LIMIT ? text.slice(0, TEXT_LIMIT) : text;
+  $: questions = questions > QUESTIONS_LIMIT ? QUESTIONS_LIMIT : questions;
+  $: options = options > OPTIONS_LIMIT ? OPTIONS_LIMIT : options;
 </script>
 
 <form class="{hideOnMobile && 'hidden'} md:block" on:submit={handleSubmit}>
@@ -64,9 +72,9 @@
         class="w-full rounded-lg bg-gray-100 py-2 px-7"
         type="number"
         min="2"
-        max="5"
+        max={QUESTIONS_LIMIT}
       />
-      <p class="ml-1 text-sm text-slate-500">Max of 5</p>
+      <p class="ml-1 text-sm text-slate-500">Max of {QUESTIONS_LIMIT}</p>
     </label>
 
     <!-- Options -->
@@ -79,9 +87,9 @@
         class="rounded-lg w-full bg-gray-100 py-2 px-7"
         type="number"
         min="2"
-        max="4"
+        max={OPTIONS_LIMIT}
       />
-      <p class="ml-1 text-sm text-slate-500">Max of 4</p>
+      <p class="ml-1 text-sm text-slate-500">Max of {OPTIONS_LIMIT}</p>
     </label>
 
     <!-- Source text -->
@@ -128,7 +136,7 @@
         placeholder="Paste your text here"
       />
       <p class="text-slate-500 text-xs text-right">
-        {text.length} / 1500
+        {text.length} / {TEXT_LIMIT}
       </p>
     </div>
 
@@ -149,6 +157,25 @@
           <span class="ml-1">Generate</span>
         {/if}
       </button>
+
+      {#if showContinueTyping}
+        <button
+          id="generate-form"
+          class="bg-white border-2 border-gray-300 px-5 py-2 text-sm leading-5 rounded-lg font-semibold text-white flex items-center hover:shadow-2xl transition-shadow ease-in delay-100"
+          on:click={() => {
+            continueTyping = true;
+            console.log('Click on continue typing');
+          }}
+          type="submit"
+        >
+          {#if isLoading}
+            <Circle3 size="30" duration="1s" />
+          {:else}
+            {@html AiIcon}
+            <span class="ml-1">Generate</span>
+          {/if}
+        </button>
+      {/if}
     </div>
   </section>
 </form>
