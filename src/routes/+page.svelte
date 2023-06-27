@@ -299,7 +299,7 @@
 <!-- Mobile Button -->
 <div class="absolute right-5 bottom-5 md:hidden">
   <button
-    class="bg-yellow-500 hover:bg-yellow-700 px-5 py-3 text-sm leading-5 rounded-lg font-semibold text-white flex items-center hover:shadow-2xl transition-shadow ease-in delay-100"
+    class="bg-yellow-500 hover:bg-yellow-700 px-5 py-3 text-sm leading-5 rounded-lg font-semibold flex items-center hover:shadow-2xl transition-shadow ease-in delay-100"
     on:click={() => (openAiEditor = !openAiEditor)}
   >
     {@html AiEditorIcon}

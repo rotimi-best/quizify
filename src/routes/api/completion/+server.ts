@@ -15,12 +15,14 @@ const messages: ChatCompletionRequestMessage[] = [];
 export async function POST({ request }) {
   const { prompt, questions, options, customPrompt, continueTyping } =
     await request.json();
-
+  console.log('continueTyping', continueTyping);
   if (continueTyping) {
     messages.push({
       role: 'user',
       content: 'Continue typing',
     });
+
+    console.log('messages', messages);
   } else if (customPrompt) {
     messages.push({
       role: 'user',
