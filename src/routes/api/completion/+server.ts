@@ -13,10 +13,10 @@ const openai = new OpenAIApi(config);
 const messages: ChatCompletionRequestMessage[] = [];
 
 export async function POST({ request }) {
-  const { prompt, questions, options, customPrompt, shouldContinue } =
+  const { prompt, questions, options, customPrompt, continueTyping } =
     await request.json();
 
-  if (shouldContinue) {
+  if (continueTyping) {
     messages.push({
       role: 'user',
       content: 'Continue typing',
