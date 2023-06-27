@@ -66,6 +66,7 @@
     api: '/api/completion',
     body,
     onResponse: (res) => {
+      console.log('useCompletion res', res)
       if (res.status === 429) {
         toast.push('You are being rate limited. Please try again later.', {
           classes: ['failed'],
@@ -93,7 +94,8 @@
       ...body,
       text: $completion,
     });
-
+    console.log('completion', $completion);
+    console.log('rawText', rawText);
     sheetData.questions = data;
     rawText = raw;
     sheetData.title = summary;
