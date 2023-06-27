@@ -16,7 +16,7 @@
   export let isLoading = false;
   export let hideOnMobile = false;
   export let continueTyping = false;
-  export let showContinueTyping = false;
+  // export let showContinueTyping = false;
 
   const SETTINGS = getAppSettings(PLAN.FREE);
   const QUESTIONS_LIMIT = SETTINGS.QUESTION_LIMIT;
@@ -158,24 +158,22 @@
         {/if}
       </button>
 
-      {#if showContinueTyping}
-        <button
-          id="generate-form"
-          class="bg-white border-2 border-gray-300 px-5 py-2 text-sm leading-5 rounded-lg font-semibold text-white flex items-center hover:shadow-2xl transition-shadow ease-in delay-100"
-          on:click={() => {
-            continueTyping = true;
-            console.log('Click on continue typing');
-          }}
-          type="submit"
-        >
-          {#if isLoading}
-            <Circle3 size="30" duration="1s" />
-          {:else}
-            {@html AiIcon}
-            <span class="ml-1">Generate</span>
-          {/if}
-        </button>
-      {/if}
+      <button
+        id="generate-form"
+        class="bg-white border-2 border-gray-300 px-5 py-2 text-sm leading-5 rounded-lg font-semibold text-white flex items-center hover:shadow-2xl transition-shadow ease-in delay-100"
+        on:click={() => {
+          continueTyping = true;
+          console.log('Click on continue typing');
+        }}
+        type="submit"
+      >
+        {#if isLoading}
+          <Circle3 size="30" duration="1s" />
+        {:else}
+          {@html AiIcon}
+          <span class="ml-1">Generate</span>
+        {/if}
+      </button>
     </div>
   </section>
 </form>

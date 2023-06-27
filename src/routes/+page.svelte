@@ -110,7 +110,6 @@
     }
 
     showContinueTyping =
-      !isLoading &&
       data.length > 0 &&
       (data.length < body.questions ||
         data.some((q) => q.options.length < body.options));
