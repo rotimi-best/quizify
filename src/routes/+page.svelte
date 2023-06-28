@@ -153,6 +153,13 @@
       data.length > 0 &&
       (data.length < body.questions ||
         data.some((q) => q.options.length < body.options));
+
+    console.log('isLoading', isLoading);
+    console.log('data', data);
+    console.log('data.length', data.length);
+    console.log('body.questions', body.questions);
+    console.log('body.options', body.options);
+    console.log('showContinueTyping', showContinueTyping);
   }
 </script>
 
