@@ -36,21 +36,23 @@ export const structureOpenAiResponse = (params: Params) => {
       const newOption = line.trim();
       const lastQuestion = questions[questions.length - 1];
 
-      const isUpdate = lastQuestion.options.findIndex((option) => {
-        return newOption.includes(option);
-      });
-      questions = questions.map((q, i) => {
-        if (questions.length - 1 === i) {
-          if (isUpdate !== -1) {
-            q.options = q.options.map((option, i) => {
-              return i === isUpdate ? newOption : option;
-            });
-          } else {
-            q.options.push(line.trim());
+      if (lastQuestion) {
+        const isUpdate = lastQuestion.options.findIndex((option) => {
+          return newOption.includes(option);
+        });
+        questions = questions.map((q, i) => {
+          if (questions.length - 1 === i) {
+            if (isUpdate !== -1) {
+              q.options = q.options.map((option, i) => {
+                return i === isUpdate ? newOption : option;
+              });
+            } else {
+              q.options.push(line.trim());
+            }
           }
-        }
-        return q;
-      });
+          return q;
+        });
+      }
     } else if (line) {
       questions = questions.map((q, i) => {
         if (questions.length - 1 === i) {
