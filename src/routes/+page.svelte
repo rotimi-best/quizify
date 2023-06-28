@@ -82,8 +82,8 @@
     api: '/api/chat',
     onResponse: (res) => {
       console.log('useChat res', res);
-      if (res.status === 429) {
-        toast.push('You are being rate limited. Please try again later.', {
+      if (res.status === 429 || res.status === 500) {
+        toast.push('Please wait and try again later.', {
           classes: ['failed'],
         });
       }
@@ -104,8 +104,7 @@
     const assistantMsgs = messages.filter(
       (message) => message.role === 'assistant'
     );
-    console.log('assistantMsgs', assistantMsgs);
-    // 2 cases here, either a user Generates from scratch or continue
+
     if (body.continueTyping) {
       const lastMsgIndexWithSummary = assistantMsgs.findLastIndex((msg) =>
         isTitle(msg.content)
@@ -115,6 +114,7 @@
         .map((msg) => msg.content)
         .join('');
     }
+
     return assistantMsgs[assistantMsgs.length - 1]?.content || '';
   };
 
