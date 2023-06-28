@@ -107,7 +107,13 @@
     console.log('assistantMsgs', assistantMsgs);
     // 2 cases here, either a user Generates from scratch or continue
     if (body.continueTyping) {
-      return assistantMsgs.map((msg) => msg.content).join('\n');
+      const lastMsgIndexWithSummary = assistantMsgs.findLastIndex((msg) =>
+        isTitle(msg.content)
+      );
+      return assistantMsgs
+        .slice(lastMsgIndexWithSummary)
+        .map((msg) => msg.content)
+        .join('');
     }
     return assistantMsgs[assistantMsgs.length - 1]?.content || '';
   };
@@ -153,7 +159,7 @@
       !$isLoading &&
       data.length > 0 &&
       (data.length < body.questions ||
-        data.some((q) => q.options.length < body.options));
+        (data[data.length - 1]?.options?.length || 0) < body.options);
   }
 </script>
 
