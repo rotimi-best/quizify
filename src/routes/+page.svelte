@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { toast } from '@zerodevx/svelte-toast';
   import copy from 'copy-html-to-clipboard';
+  // import generateId from 'generate-unique-id';
   import AiEditorIcon from '$lib/images/ai-editor.svg?raw';
   import TadaIcon from '$lib/images/tada.png';
   import QuizIcon from '$lib/images/quiz.svg?raw';
@@ -21,12 +22,22 @@
   import { toggleConfetti } from '$lib/stores/confetti';
   import { initTour } from '$lib/utils/appTour';
   import { TemplateId, type Templates } from '$lib/types/template';
+  import { getQuizPrompt } from '$lib/utils/ai';
   import type { QData } from '$lib/types/questions';
+  import type { ChatCompletionRequestMessage } from 'openai-edge';
 
-  let body = {
+  let body: {
+    questions: number;
+    options: number;
+    continueTyping: boolean;
+    messages: ChatCompletionRequestMessage[];
+    customPrompt: string;
+  } = {
     questions: 5,
     options: 3,
     continueTyping: false,
+    messages: [],
+    customPrompt: '',
   };
   let sheetData: { title: string; questions: Array<QData> } = {
     title: '',
@@ -63,6 +74,30 @@
   ];
   let templateId: TemplateId = templates[0].id || TemplateId.oop;
   let currentTab = tabs[0].value;
+
+  const setMessages = () => {
+    const messages = [...body.messages];
+    if (body.continueTyping) {
+      messages.push({
+        role: 'user',
+        content: 'Continue typing',
+      });
+
+      console.log('messages', messages);
+    } else if (body.customPrompt) {
+      messages.push({
+        role: 'user',
+        content: body.customPrompt,
+      });
+    } else {
+      messages.push({
+        role: 'user',
+        content: getQuizPrompt(body.questions, body.options, $input),
+      });
+    }
+
+    body.messages = messages;
+  };
 
   const { input, handleSubmit, completion, isLoading } = useCompletion({
     initialInput: mockData[templateId],
@@ -137,6 +172,7 @@
     handleSubmit={(e) => {
       if ($isLoading) return;
       sheetData.questions = [];
+      setMessages();
       setTimeout(() => {
         handleSubmit(e);
         openAiEditor = false;
@@ -164,6 +200,7 @@
       handleSubmit={(e) => {
         if ($isLoading) return;
         sheetData.questions = [];
+        setMessages();
         setTimeout(() => {
           handleSubmit(e);
         }, 500);
