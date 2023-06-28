@@ -43,13 +43,13 @@
     title: '',
     questions: [],
   };
-  let text = '';
   let rawText: Array<string> = [];
   let textarea: HTMLElement;
   let rawDiv: HTMLElement;
 
   let openAiEditor = false;
   let showContinueTyping = false;
+  let generateNew = false;
 
   let tabs = [
     {
@@ -75,6 +75,7 @@
   ];
   let templateId: TemplateId = templates[0].id || TemplateId.oop;
   let currentTab = tabs[0].value;
+  let text = mockData[templateId];
 
   const { input, handleSubmit, messages, isLoading } = useChat({
     initialInput: mockData[templateId],
@@ -100,10 +101,31 @@
       (currentTab = tab);
 
   const getLatestAssistantMsg = (messages: ChatCompletionRequestMessage[]) => {
-    return messages
-      .filter((message) => message.role === 'assistant')
-      .map((msg) => msg.content)
-      .join('\n');
+    const assistantMsgs = messages.filter(
+      (message) => message.role === 'assistant'
+    );
+    // 2 cases here, either a user Generates from scratch or continue
+    if (body.continueTyping) {
+      return assistantMsgs.map((msg) => msg.content).join('\n');
+    }
+    return assistantMsgs[assistantMsgs.length - 1]?.content || '';
+  };
+
+  const customHandleSubmit = (e: {} | undefined) => {
+    if ($isLoading) return;
+    sheetData.questions = [];
+    if (body.continueTyping) {
+      generateNew = false;
+
+      $input = 'Continue typing';
+    } else {
+      generateNew = true;
+      $input = getQuizPrompt(body.questions, body.options, text);
+    }
+    setTimeout(() => {
+      handleSubmit(e);
+      openAiEditor = false;
+    }, 500);
   };
 
   onMount(() => {
@@ -111,13 +133,11 @@
   });
 
   $: {
-    console.log('messages', $messages);
     const { data, raw, summary } = structureOpenAiResponse({
       ...body,
       text: getLatestAssistantMsg($messages) || '',
     });
-    // console.log('completion', $completion);
-    console.log('rawText', rawText);
+
     sheetData.questions = data;
     rawText = raw;
     sheetData.title = summary;
@@ -129,15 +149,10 @@
     }
 
     showContinueTyping =
+      !isLoading &&
       data.length > 0 &&
       (data.length < body.questions ||
         data.some((q) => q.options.length < body.options));
-
-    console.log('body.questions', body.questions);
-    console.log('data.length', data.length);
-    console.log('data', data);
-    console.log('body.options', body.options);
-    console.log('showContinueTyping', showContinueTyping);
   }
 </script>
 
@@ -153,19 +168,7 @@
     handleTemplateChange={() => {
       $input = mockData[templateId];
     }}
-    handleSubmit={(e) => {
-      if ($isLoading) return;
-      sheetData.questions = [];
-      if (body.continueTyping) {
-        $input = 'Continue typing';
-      } else {
-        $input = getQuizPrompt(body.questions, body.options, text);
-      }
-      setTimeout(() => {
-        handleSubmit(e);
-        openAiEditor = false;
-      }, 500);
-    }}
+    handleSubmit={customHandleSubmit}
     bind:continueTyping={body.continueTyping}
     bind:questions={body.questions}
     bind:options={body.options}
@@ -185,18 +188,7 @@
       handleTemplateChange={() => {
         text = mockData[templateId];
       }}
-      handleSubmit={(e) => {
-        if ($isLoading) return;
-        sheetData.questions = [];
-        if (body.continueTyping) {
-          $input = 'Continue typing';
-        } else {
-          $input = getQuizPrompt(body.questions, body.options, text);
-        }
-        setTimeout(() => {
-          handleSubmit(e);
-        }, 500);
-      }}
+      handleSubmit={customHandleSubmit}
       bind:continueTyping={body.continueTyping}
       bind:questions={body.questions}
       bind:options={body.options}
@@ -232,13 +224,6 @@
             >
               {#if !rawText.length || !rawText[0].length}
                 <p class="font-sans font-bold">Your Generated output:</p>
-                <ul>
-                  {#each $messages as message}
-                    <li class="border border-gray-200 mb-5">
-                      {message.role}: {message.content}
-                    </li>
-                  {/each}
-                </ul>
               {:else}
                 {#each rawText as text}
                   {#if isTitle(text)}
