@@ -142,6 +142,21 @@
 
     <!-- Generate button -->
     <div class="w-full flex justify-center">
+      {#if showContinueTyping}
+        <button
+          id="generate-form"
+          class="bg-white border-2 border-yellow-300 px-5 py-2 text-sm leading-5 rounded-lg font-semibold text-black flex items-center hover:shadow-2xl transition-shadow ease-in delay-100"
+          disabled={isLoading}
+          on:click={() => {
+            if (isLoading) return;
+            continueTyping = true;
+            console.log('Click on continue typing');
+          }}
+          type="submit"
+        >
+          <span class="ml-1">Continue typing</span>
+        </button>
+      {/if}
       <button
         id="generate-form"
         class="{isLoading
@@ -156,19 +171,6 @@
           {@html AiIcon}
           <span class="ml-1">Generate</span>
         {/if}
-      </button>
-
-      <button
-        id="generate-form"
-        class="bg-white border-2 border-gray-300 px-5 py-2 text-sm leading-5 rounded-lg font-semibold text-black flex items-center hover:shadow-2xl transition-shadow ease-in delay-100"
-        on:click={() => {
-          continueTyping = true;
-          console.log('Click on continue typing');
-        }}
-        type="submit"
-      >
-        {showContinueTyping ? '+' : '-'}
-        <span class="ml-1">Continue typing</span>
       </button>
     </div>
   </section>

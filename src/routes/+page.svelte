@@ -9,7 +9,7 @@
   import CopyIcon from '$lib/images/copy.svg?raw';
   import CodeMirror from 'svelte-codemirror-editor';
   import { javascript } from '@codemirror/lang-javascript';
-  import { useCompletion } from 'ai/svelte';
+  import { useChat } from 'ai/svelte';
   import { structureOpenAiResponse } from '$lib/utils/structureOpenAiResponse';
   import { mockData } from '$lib/utils/mock';
   import Confetti from './Confetti.svelte';
@@ -43,6 +43,7 @@
     title: '',
     questions: [],
   };
+  let text = '';
   let rawText: Array<string> = [];
   let textarea: HTMLElement;
   let rawDiv: HTMLElement;
@@ -75,36 +76,11 @@
   let templateId: TemplateId = templates[0].id || TemplateId.oop;
   let currentTab = tabs[0].value;
 
-  const setMessages = () => {
-    const messages = [...body.messages];
-    if (body.continueTyping) {
-      messages.push({
-        role: 'user',
-        content: 'Continue typing',
-      });
-
-      console.log('messages', messages);
-    } else if (body.customPrompt) {
-      messages.push({
-        role: 'user',
-        content: body.customPrompt,
-      });
-    } else {
-      messages.push({
-        role: 'user',
-        content: getQuizPrompt(body.questions, body.options, $input),
-      });
-    }
-
-    body.messages = messages;
-  };
-
-  const { input, handleSubmit, completion, isLoading } = useCompletion({
+  const { input, handleSubmit, messages, isLoading } = useChat({
     initialInput: mockData[templateId],
-    api: '/api/completion',
-    body,
+    api: '/api/chat',
     onResponse: (res) => {
-      console.log('useCompletion res', res);
+      console.log('useChat res', res);
       if (res.status === 429) {
         toast.push('You are being rate limited. Please try again later.', {
           classes: ['failed'],
@@ -123,16 +99,24 @@
     () =>
       (currentTab = tab);
 
+  const getLatestAssistantMsg = (messages: ChatCompletionRequestMessage[]) => {
+    return messages
+      .filter((message) => message.role === 'assistant')
+      .map((msg) => msg.content)
+      .join('\n');
+  };
+
   onMount(() => {
     initTour();
   });
 
   $: {
+    console.log('messages', $messages);
     const { data, raw, summary } = structureOpenAiResponse({
       ...body,
-      text: $completion,
+      text: getLatestAssistantMsg($messages) || '',
     });
-    console.log('completion', $completion);
+    // console.log('completion', $completion);
     console.log('rawText', rawText);
     sheetData.questions = data;
     rawText = raw;
@@ -172,7 +156,11 @@
     handleSubmit={(e) => {
       if ($isLoading) return;
       sheetData.questions = [];
-      setMessages();
+      if (body.continueTyping) {
+        $input = 'Continue typing';
+      } else {
+        $input = getQuizPrompt(body.questions, body.options, text);
+      }
       setTimeout(() => {
         handleSubmit(e);
         openAiEditor = false;
@@ -181,7 +169,7 @@
     bind:continueTyping={body.continueTyping}
     bind:questions={body.questions}
     bind:options={body.options}
-    bind:text={$input}
+    bind:text
     isLoading={$isLoading}
     {showContinueTyping}
   />
@@ -195,12 +183,16 @@
       {templates}
       bind:templateId
       handleTemplateChange={() => {
-        $input = mockData[templateId];
+        text = mockData[templateId];
       }}
       handleSubmit={(e) => {
         if ($isLoading) return;
         sheetData.questions = [];
-        setMessages();
+        if (body.continueTyping) {
+          $input = 'Continue typing';
+        } else {
+          $input = getQuizPrompt(body.questions, body.options, text);
+        }
         setTimeout(() => {
           handleSubmit(e);
         }, 500);
@@ -208,7 +200,7 @@
       bind:continueTyping={body.continueTyping}
       bind:questions={body.questions}
       bind:options={body.options}
-      bind:text={$input}
+      bind:text
       isLoading={$isLoading}
       hideOnMobile={true}
       {showContinueTyping}
@@ -240,6 +232,13 @@
             >
               {#if !rawText.length || !rawText[0].length}
                 <p class="font-sans font-bold">Your Generated output:</p>
+                <ul>
+                  {#each $messages as message}
+                    <li class="border border-gray-200 mb-5">
+                      {message.role}: {message.content}
+                    </li>
+                  {/each}
+                </ul>
               {:else}
                 {#each rawText as text}
                   {#if isTitle(text)}
