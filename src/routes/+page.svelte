@@ -104,6 +104,7 @@
     const assistantMsgs = messages.filter(
       (message) => message.role === 'assistant'
     );
+    console.log('assistantMsgs', assistantMsgs);
     // 2 cases here, either a user Generates from scratch or continue
     if (body.continueTyping) {
       return assistantMsgs.map((msg) => msg.content).join('\n');
@@ -153,13 +154,6 @@
       data.length > 0 &&
       (data.length < body.questions ||
         data.some((q) => q.options.length < body.options));
-
-    console.log('isLoading', isLoading);
-    console.log('data', data);
-    console.log('data.length', data.length);
-    console.log('body.questions', body.questions);
-    console.log('body.options', body.options);
-    console.log('showContinueTyping', showContinueTyping);
   }
 </script>
 
