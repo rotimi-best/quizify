@@ -4,24 +4,47 @@ export const getQuizPrompt = (
   prompt: string
 ) => {
   return `
-Given the following text, generate ${questions} questions to ask my students with ${options} options with 1 correct answer and ${
-    options - 1
-  } wrong answer also indicate the answer in a bracket. Summarize this text in one sentence with a prefix that says "Summary: ". Mix the options so that answers don't have the same options in each question. For the order of question, use the following format
-
+Write ${questions} multichoice questions with ${options} options from the text below. IMPORTANT: Summarize the text in 10 words, do not repeat answers and use this format template
   Summary: Summary of text
   1. First question
-     a) Option 1
-     b) Option 2
-     c) Option 3
-     d) Option 4
-  Answer: a)
+     A) Option 1
+     B) Option 2
+     C) Option 3
+     D) Option 4
+  Answer:  \${CHOICE A, B, C, or D}
   2. Next question
-     a) An option
-     b) Another option
-     c) Extra option
-     d) Plus option
-  Answer: c)
+     A) An option
+     B) Another option
+     C) Extra option
+     D) Plus option
+  Answer:  \${CHOICE A, B, C, or D}
   
   Here is the text in tripple quotes:
 """${prompt}"""`;
+};
+
+export const getQuizPromptV2 = (
+  questions: number,
+  options: number,
+  prompt: string
+) => {
+  return `Write a ${questions} multichoice questions with ${options} options from the text below.
+  Important Instructions:
+1. Summarize the text in 10 words. 
+2. Do not repeat answers.
+3. Use this format template. 
+
+---BEGIN FORMAT TEMPLATE---
+\${SUMMARY_IN_10_WORDS}
+
+\${QUESTION}
+A) \${ANSWER 1}
+B) \${ANSWER 2}
+C) \${ANSWER 3}
+D) \${ANSWER 4}
+Correct Answer: \${CHOICE A, B, C, or D}
+---END FORMAT TEMPLATE---
+
+Here is the text:
+${prompt}.`;
 };

@@ -49,7 +49,6 @@
 
   let openAiEditor = false;
   let showContinueTyping = false;
-  let generateNew = false;
 
   let tabs = [
     {
@@ -106,13 +105,14 @@
     );
 
     if (body.continueTyping) {
-      const lastMsgIndexWithSummary = assistantMsgs.findLastIndex((msg) =>
-        isTitle(msg.content)
-      );
-      return assistantMsgs
-        .slice(lastMsgIndexWithSummary)
-        .map((msg) => msg.content)
-        .join('');
+      // const lastMsgIndexWithSummary = assistantMsgs.findLastIndex((msg) =>
+      //   isTitle(msg.content)
+      // );
+
+      // @TODO: check if last question starts with a number, then move it to new line
+      const lastMsg = assistantMsgs[assistantMsgs.length - 1] || {};
+      const delimeter = isQuestion(lastMsg.content) ? '\n' : '';
+      return assistantMsgs.map((msg) => msg.content).join(delimeter);
     }
 
     return assistantMsgs[assistantMsgs.length - 1]?.content || '';
@@ -122,17 +122,24 @@
     if ($isLoading) return;
     sheetData.questions = [];
     if (body.continueTyping) {
-      generateNew = false;
-
       $input = 'Continue typing';
     } else {
-      generateNew = true;
+      $messages = [];
       $input = getQuizPrompt(body.questions, body.options, text);
     }
     setTimeout(() => {
       handleSubmit(e);
       openAiEditor = false;
     }, 500);
+  };
+
+  const getShowConitueTyping = (isLoading: boolean, data: QData[]): boolean => {
+    return (
+      !isLoading &&
+      data.length > 0 &&
+      (data.length < body.questions ||
+        (data[data.length - 1]?.options?.length || 0) < body.options)
+    );
   };
 
   onMount(() => {
@@ -155,11 +162,7 @@
       rawDiv.scrollTop = rawDiv.scrollHeight;
     }
 
-    showContinueTyping =
-      !$isLoading &&
-      data.length > 0 &&
-      (data.length < body.questions ||
-        (data[data.length - 1]?.options?.length || 0) < body.options);
+    showContinueTyping = getShowConitueTyping($isLoading, data);
   }
 </script>
 
