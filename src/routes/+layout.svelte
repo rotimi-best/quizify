@@ -36,7 +36,7 @@
 
   export let data;
 
-  let isSideNavOpen = false;
+  let isSideNavOpen = true;
   let isProfileOpen = false;
 
   const quizTopics = [
@@ -112,12 +112,7 @@
 
 <SvelteToast options={{ reversed: true, intro: { y: 192 } }} />
 
-<Header
-  persistentHamburgerMenu={true}
-  platformName="Quizify AI"
-  class="text-black"
-  bind:isSideNavOpen
->
+<Header platformName="Quizify AI" class="text-black" bind:isSideNavOpen>
   <svelte:fragment slot="skip-to-content">
     <SkipToContent />
   </svelte:fragment>
@@ -232,7 +227,7 @@
   </HeaderUtilities>
 </Header>
 
-<Content>
+<Content id="main-content">
   <slot />
 </Content>
 
@@ -247,6 +242,12 @@
 
   :global(.bx--header__action svg) {
     margin: auto;
+  }
+
+  :global(#main-content) {
+    margin-left: 16rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 
   .upgrade {
