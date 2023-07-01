@@ -257,7 +257,7 @@
     overflow: hidden;
     border-radius: 0.25rem;
     background-color: #fafafa;
-    background-image: url(upgrade.jpeg);
+    background-image: url(/upgrade.jpeg);
     background-position: center;
   }
 </style>
