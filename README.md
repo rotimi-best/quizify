@@ -4,3 +4,11 @@
 </a>
 
 Quizify is an AI Quiz generator powered by Vercel AI SDK. Built with Sveltekit, OpenAI, and Vercel AI SDK.
+
+### Supabase
+
+Generate type definitions
+
+```cli
+npx supabase gen types typescript --project-id "$PROJECT_REF" --schema public > DatabaseDefinitions
+```

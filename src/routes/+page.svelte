@@ -190,7 +190,7 @@
 <Confetti />
 
 <main class="w-full mt-4 md:mt-4">
-  <div class="w-full md:w-4/5 md:m-auto md:flex md:justify-center">
+  <div class="w-full md:flex md:justify-center">
     <!-- Left Sidebar -->
     <Sidebar
       {templates}

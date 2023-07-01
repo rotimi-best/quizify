@@ -44,23 +44,6 @@
         correct answer
       </p>
     </div>
-    <!-- <div class="mb-5">
-      <label>
-        <span class="font-sans font-bold">Examples</span>
-        :
-        <select
-          class="border border-gray-200 p-2"
-          bind:value={templateId}
-          on:change={handleTemplateChange}
-        >
-          {#each templates as template}
-            <option value={template.id}>
-              {template.text}
-            </option>
-          {/each}
-        </select>
-      </label>
-    </div> -->
 
     <!-- Questions -->
     <label class="block w-full mb-5">
