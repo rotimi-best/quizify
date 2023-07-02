@@ -155,7 +155,6 @@
           <Toggle
             bind:toggled={explanation}
             class="sidebar-toggle"
-            disabled={true}
           >
             <span slot="labelA" />
             <span slot="labelB" />
