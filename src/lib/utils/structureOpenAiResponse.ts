@@ -7,6 +7,7 @@ export const structureOpenAiResponse = (params: Params) => {
 
   textLines.forEach((line: string) => {
     const isSummary = /^Summary:/.test(line.trim());
+    const isExplanation = /^Explanation:/.test(line.trim());
     const isQuestion = /^\d/.test(line.trim());
     const isOption = /^\w[\)\.]/.test(line.trim());
 
@@ -53,6 +54,13 @@ export const structureOpenAiResponse = (params: Params) => {
           return q;
         });
       }
+    } else if (isExplanation && params.explanation) {
+      questions = questions.map((q, i) => {
+        if (questions.length - 1 === i) {
+          q.explanation = line.trim();
+        }
+        return q;
+      });
     } else if (line) {
       questions = questions.map((q, i) => {
         if (questions.length - 1 === i) {

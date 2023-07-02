@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { toast } from '@zerodevx/svelte-toast';
+  // @ts-ignore
   import copy from 'copy-html-to-clipboard';
   // import generateId from 'generate-unique-id';
   import AiEditorIcon from '$lib/images/ai-editor.svg?raw';
@@ -23,21 +24,25 @@
   import { initTour } from '$lib/utils/appTour';
   import { TemplateId, type Templates } from '$lib/types/template';
   import { getQuizPrompt } from '$lib/utils/ai';
-  import type { QData } from '$lib/types/questions';
+  import type { QData, Params } from '$lib/types/questions';
   import type { ChatCompletionRequestMessage } from 'openai-edge';
 
   let body: {
     questions: number;
     options: number;
+    explanation: boolean;
     continueTyping: boolean;
     messages: ChatCompletionRequestMessage[];
     customPrompt: string;
+    studentPersona: string;
   } = {
     questions: 5,
     options: 3,
+    explanation: false,
     continueTyping: false,
     messages: [],
     customPrompt: '',
+    studentPersona: '',
   };
   let sheetData: { title: string; questions: Array<QData> } = {
     title: '',
@@ -75,6 +80,32 @@
   let templateId: TemplateId = templates[0].id || TemplateId.oop;
   let currentTab = tabs[0].value;
   let text = mockData[templateId];
+  let studentPersonas = [
+    {
+      value: '',
+      text: '',
+    },
+    {
+      value: 'childhood',
+      text: 'Early Childhood (3-5 years old)',
+    },
+    {
+      value: 'elementary',
+      text: 'Elementary School (6-12 years old)',
+    },
+    {
+      value: 'middleschool',
+      text: 'Middle School (13-15 years old)',
+    },
+    {
+      value: 'highschool',
+      text: 'High School (13-18 years old)',
+    },
+    {
+      value: 'college',
+      text: 'College (18-22 years old)',
+    },
+  ];
 
   const { input, handleSubmit, messages, isLoading } = useChat({
     initialInput: mockData[templateId],
@@ -105,11 +136,6 @@
     );
 
     if (body.continueTyping) {
-      // const lastMsgIndexWithSummary = assistantMsgs.findLastIndex((msg) =>
-      //   isTitle(msg.content)
-      // );
-
-      // @TODO: check if last question starts with a number, then move it to new line
       const lastMsg = assistantMsgs[assistantMsgs.length - 1] || {};
       const delimeter = isQuestion(lastMsg.content) ? '\n' : '';
       return assistantMsgs.map((msg) => msg.content).join(delimeter);
@@ -125,7 +151,19 @@
       $input = 'Continue typing';
     } else {
       $messages = [];
-      $input = getQuizPrompt(body.questions, body.options, text);
+      $input = getQuizPrompt(
+        {
+          questions: body.questions,
+          options: body.options,
+          explanation: body.explanation,
+          customPrompt: body.customPrompt,
+          studentPersona:
+            studentPersonas.find((p) => p.value === body.studentPersona)
+              ?.text || '',
+        } as Params,
+        text
+      );
+      console.log('$input', $input);
     }
     setTimeout(() => {
       handleSubmit(e);
@@ -182,11 +220,16 @@
     bind:continueTyping={body.continueTyping}
     bind:questions={body.questions}
     bind:options={body.options}
+    bind:explanation={body.explanation}
+    bind:customPrompt={body.customPrompt}
     bind:text
+    bind:studentPersona={body.studentPersona}
     isLoading={$isLoading}
+    {studentPersonas}
     {showContinueTyping}
   />
 </Modal>
+
 <Confetti />
 
 <main class="w-full mt-4 md:mt-4">
@@ -202,9 +245,13 @@
       bind:continueTyping={body.continueTyping}
       bind:questions={body.questions}
       bind:options={body.options}
+      bind:explanation={body.explanation}
+      bind:customPrompt={body.customPrompt}
+      bind:studentPersona={body.studentPersona}
       bind:text
       isLoading={$isLoading}
       hideOnMobile={true}
+      {studentPersonas}
       {showContinueTyping}
     />
 

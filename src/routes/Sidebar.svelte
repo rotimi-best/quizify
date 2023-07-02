@@ -1,5 +1,14 @@
 <script lang="ts">
+  import {
+    Accordion,
+    AccordionItem,
+    Toggle,
+    Tooltip,
+    Select,
+    SelectItem,
+  } from 'carbon-components-svelte';
   import { getAppSettings, PLAN } from '$lib/utils/settings';
+  import ProBadge from './ProBadge.svelte';
   import AiIcon from '$lib/images/ai.svg?raw';
   import ArrowRightcon from '$lib/images/arrow-right.svg?raw';
   import ArrowDownIcon from '$lib/images/arrow-down.svg?raw';
@@ -7,8 +16,12 @@
   import { Circle3 } from 'svelte-loading-spinners';
 
   export let text = '';
+  export let customPrompt = '';
+  export let studentPersona = '';
+  export let studentPersonas = [{ value: '', text: '' }];
   export let questions = 0;
   export let options = 0;
+  export let explanation = false;
   export let handleSubmit = (e = {}) => {};
   export let templateId: TemplateId;
   export let templates: Array<Templates>;
@@ -123,6 +136,61 @@
       </p>
     </div>
 
+    <Accordion class="mb-4">
+      <AccordionItem class="">
+        <svelte:fragment slot="title">
+          <h5 class="flex">
+            Advanced Settings
+            <ProBadge position="ml-2" />
+          </h5>
+        </svelte:fragment>
+
+        <!-- Explanation Trigger -->
+        <div class="flex justify-between items-center w-full my-4">
+          <Tooltip triggerText="Explain answer" class="tooltip">
+            <p>
+              Helps students understand the answer by providing an explanation.
+            </p>
+          </Tooltip>
+          <Toggle
+            bind:toggled={explanation}
+            class="sidebar-toggle"
+            disabled={true}
+          >
+            <span slot="labelA" />
+            <span slot="labelB" />
+          </Toggle>
+        </div>
+
+        <!-- Custom Prompt -->
+        <div class="my-4">
+          <Tooltip triggerText="Custom Prompt" class="tooltip">
+            <p>You can add extra prompts to improve the generated output.</p>
+          </Tooltip>
+          <input
+            bind:value={customPrompt}
+            class="w-full rounded-lg bg-gray-100 py-2 px-2"
+            type="text"
+          />
+        </div>
+
+        <!-- Student Persona -->
+        <div class="my-4">
+          <Tooltip triggerText="Student Persona" class="tooltip">
+            <p>Describe the target audience for the quiz..</p>
+          </Tooltip>
+          <Select labelText="" bind:selected={studentPersona}>
+            {#each studentPersonas as _studentPersona}
+              <SelectItem
+                value={_studentPersona.value}
+                text={_studentPersona.text}
+              />
+            {/each}
+          </Select>
+        </div>
+      </AccordionItem>
+    </Accordion>
+
     <!-- Generate button -->
     <div class="w-full flex justify-center">
       <button
@@ -174,6 +242,27 @@
     height: 30vh;
     max-height: 30vh;
   }
+
+  :global(.bx--accordion__title) {
+    margin: 0.5rem !important;
+  }
+
+  :global(.bx--accordion__content) {
+    padding-right: 0.5rem !important;
+    padding-left: 0.5rem !important;
+  }
+
+  :global(.bx--accordion__content .sidebar-toggle) {
+    display: flex !important;
+    align-items: flex-end;
+  }
+  :global(.bx--accordion__content .sidebar-toggle .bx--toggle__switch) {
+    margin-top: 0px !important;
+  }
+  :global(.bx--tooltip__label) {
+    font-size: 1em;
+  }
+
   @media only screen and (min-width: 768px) {
     form section {
       max-width: 380px;

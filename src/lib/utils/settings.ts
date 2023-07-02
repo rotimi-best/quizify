@@ -16,7 +16,7 @@ export type APP_SETTINGS_TYPE = {
 
 export const APP_SETTINGS: APP_SETTINGS_TYPE = {
   [PLAN.FREE]: {
-    QUESTION_LIMIT: 5,
+    QUESTION_LIMIT: 25,
     OPTIONS_LIMIT: 4,
     TEXT_LIMIT: 1500,
   },
