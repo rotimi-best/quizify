@@ -34,6 +34,8 @@
 		"@codemirror/lang-javascript": "^6.1.9",
 		"@supabase/auth-helpers-sveltekit": "^0.10.1",
 		"@supabase/supabase-js": "^2.26.0",
+		"@upstash/ratelimit": "^1.0.1",
+		"@upstash/redis": "^1.28.4",
 		"@vercel/analytics": "^1.0.1",
 		"ai": "^2.1.3",
 		"canvas-confetti": "^1.6.0",

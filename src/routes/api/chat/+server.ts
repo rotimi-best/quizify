@@ -8,8 +8,12 @@ const config = new Configuration({
 });
 const openai = new OpenAIApi(config);
 
-export async function POST({ request }) {
+export async function POST({ request, getClientAddress }) {
   const { messages } = await request.json();
+
+  const ip = getClientAddress();
+
+  console.log({ ip });
 
   // Ask OpenAI for a streaming completion given the prompt
   const response = await openai.createChatCompletion({

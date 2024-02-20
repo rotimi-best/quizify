@@ -22,7 +22,7 @@
   export let questions = 0;
   export let options = 0;
   export let explanation = false;
-  export let handleSubmit = (e = {}) => {};
+  // export let handleSubmit = (e = {}) => {};
   export let templateId: TemplateId;
   export let templates: Array<Templates>;
   export let handleTemplateChange = () => {};
@@ -36,6 +36,10 @@
   const TEXT_LIMIT = SETTINGS.TEXT_LIMIT;
   const OPTIONS_LIMIT = SETTINGS.OPTIONS_LIMIT;
 
+  function _handleSubmit() {
+    alert('Contact me on twitter to get access @rotimi_best');
+  }
+
   let showExamples = false;
 
   $: text = text.length > TEXT_LIMIT ? text.slice(0, TEXT_LIMIT) : text;
@@ -43,7 +47,7 @@
   $: options = options > OPTIONS_LIMIT ? OPTIONS_LIMIT : options;
 </script>
 
-<form class="{hideOnMobile && 'hidden'} md:block" on:submit={handleSubmit}>
+<form class="{hideOnMobile && 'hidden'} md:block" on:submit={_handleSubmit}>
   <section
     class="{hideOnMobile &&
       'rounded-lg bg-white border-4 border-gray-200 p-5'} h-full"
@@ -152,10 +156,7 @@
               Helps students understand the answer by providing an explanation.
             </p>
           </Tooltip>
-          <Toggle
-            bind:toggled={explanation}
-            class="sidebar-toggle"
-          >
+          <Toggle bind:toggled={explanation} class="sidebar-toggle">
             <span slot="labelA" />
             <span slot="labelB" />
           </Toggle>
