@@ -41,6 +41,7 @@
 		"canvas-confetti": "^1.6.0",
 		"copy-html-to-clipboard": "^4.0.1",
 		"openai-edge": "^1.0.0",
+		"posthog-js": "^1.121.1",
 		"shepherd.js": "^11.1.1",
 		"svelte-codemirror-editor": "^1.1.0"
 	}

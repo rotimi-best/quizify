@@ -31,6 +31,7 @@
   import { inject } from '@vercel/analytics';
   import { invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
+  import posthog from 'posthog-js';
 
   import '../app.css';
 
@@ -96,6 +97,12 @@
 
   onMount(() => {
     console.log('session', session);
+
+    // Init posthog
+    posthog.init('phc_z7ZMHnZr7rX2btrLBgjvQdG5n4qQVKknC1lETxkR8Te', {
+      api_host: 'https://eu.posthog.com',
+    });
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, _session) => {
