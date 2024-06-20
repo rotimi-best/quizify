@@ -36,9 +36,9 @@
   const TEXT_LIMIT = SETTINGS.TEXT_LIMIT;
   const OPTIONS_LIMIT = SETTINGS.OPTIONS_LIMIT;
 
-  function _handleSubmit() {
-    alert('Contact me on twitter to get access @rotimi_best');
-  }
+  // function _handleSubmit() {
+  //   alert('Contact me on twitter to get access @rotimi_best');
+  // }
 
   let showExamples = false;
 
