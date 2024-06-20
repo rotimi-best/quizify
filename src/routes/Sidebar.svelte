@@ -22,7 +22,7 @@
   export let questions = 0;
   export let options = 0;
   export let explanation = false;
-  // export let handleSubmit = (e = {}) => {};
+  export let handleSubmit = (e = {}) => {};
   export let templateId: TemplateId;
   export let templates: Array<Templates>;
   export let handleTemplateChange = () => {};
@@ -47,7 +47,7 @@
   $: options = options > OPTIONS_LIMIT ? OPTIONS_LIMIT : options;
 </script>
 
-<form class="{hideOnMobile && 'hidden'} md:block" on:submit={_handleSubmit}>
+<form class="{hideOnMobile && 'hidden'} md:block" on:submit={handleSubmit}>
   <section
     class="{hideOnMobile &&
       'rounded-lg bg-white border-4 border-gray-200 p-5'} h-full"
